@@ -61,8 +61,6 @@ enum{
         
         [self setTouchEnabled:YES];
         
-        _monsters = [[NSMutableArray alloc] init];
-        _projectiles = [[NSMutableArray alloc] init];
         _gameBoard = [[NSMutableDictionary alloc] init];
         
         CCSprite *emptySlot = [CCSprite spriteWithFile:@"slot.png"];
@@ -70,21 +68,22 @@ enum{
         int slotWidth = [emptySlot boundingBox].size.width;
         int slotHeight = [emptySlot boundingBox].size.height;
         
-        for (int i = 0; i < BOARD_SIZE; i++ ){
+        for (int row = 0; row < BOARD_SIZE; row++ ){
             
-            for ( int j = 0; j < BOARD_SIZE; j++){
+            for ( int col = 0; col < BOARD_SIZE; col++){
                 CCSprite *emptySlot = [CCSprite spriteWithFile:@"slot.png"
                                                           rect:CGRectMake(0, 0, 25, 25)];
                 // Should be an ID
                 emptySlot.tag = empty;
                 
                 // the x, y position is the center of that object,
-                // if I do want to place them in "center" center, need to plus half the the width, theoratically
+                // if I do want to place them in "center" center,
+                // need to plus half the the width theoratically
                 
                 float boardOriX = winSize.width/4;
-                emptySlot.position = ccp(boardOriX+(j+1)*slotWidth, (i+1)*slotHeight);
+                emptySlot.position = ccp(boardOriX+(col+1)*slotWidth, (row+1)*slotHeight);
                 
-                NSString *coor = [self toTupleFrom:j andY:i];
+                NSString *coor = [self toTupleFrom:col andY:row];
                 
                 // add to the mutable array
                 [_gameBoard setObject:emptySlot forKey:coor];
@@ -92,14 +91,10 @@ enum{
                 // add to layer/canvas
                 [ self addChild: _gameBoard[coor]];
                 
-                
             }
         }
 
         [self schedule:@selector(update:)];
-        
-        //[[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"background-music-aac.caf"];
-        
     }
     return self;
 }
@@ -110,109 +105,57 @@ enum{
     UITouch *touch = [touches anyObject];
     CGPoint location = [self convertTouchToNodeSpace:touch];
     
-    // Set up initial location of projectile
-//    CGSize winSize = [[CCDirector sharedDirector] winSize];
-//    CCSprite *projectile = [CCSprite spriteWithFile:@"projectile.png"
-//                                               rect:CGRectMake(0, 0, 20, 20)];
-//    projectile.position = ccp(20, winSize.height/2);
-//    
-//    // Determine offset of location to projectile
-//    CGPoint offset = ccpSub(location, projectile.position);
-//    
-//    // Bail out if you are shooting down or backwards
-//    if (offset.x <= 0) return;
-//    
-//    // Ok to add now - we've double checked position
-//    [self addChild:projectile];
-//    
-//    int realX = winSize.width + (projectile.contentSize.width/2);
-//    float ratio = (float) offset.y / (float) offset.x;
-//    int realY = (realX * ratio) + projectile.position.y;
-//    CGPoint realDest = ccp(realX, realY);
-//    
-//    // Determine the length of how far you're shooting
-//    int offRealX = realX - projectile.position.x;
-//    int offRealY = realY - projectile.position.y;
-//    float length = sqrtf((offRealX*offRealX)+(offRealY*offRealY));
-//    float velocity = 480/1; // 480pixels/1sec
-//    float realMoveDuration = length/velocity;
-//    
-//    // Move projectile to actual endpoint
-//    [projectile runAction:
-//     [CCSequence actions:
-//      [CCMoveTo actionWithDuration:realMoveDuration position:realDest],
-//      [CCCallBlockN actionWithBlock:^(CCNode *node) {
-//         [_projectiles removeObject:node];
-//         [node removeFromParentAndCleanup:YES];
-//    }],
-//      nil]];
-//    
-//    projectile.tag = 2;
-//    [_projectiles addObject:projectile];
-    
     [[SimpleAudioEngine sharedEngine] playEffect:@"pew-pew-lei.caf"];
     
     /////////////////////////////////////////////////
     
     for ( id key in _gameBoard){
         CCSprite *oneSlot = _gameBoard[key];
-     //   CGRect rect = CGRectMake(0, 0, contentSize_.width, contentSize_.height);
-      //  return CGRectApplyAffineTransform(rect, [self nodeToParentTransform]);
         
         //TODO: need some arrow above the slots
         if (CGRectContainsPoint(oneSlot.boundingBox, location)){
            
             if (oneSlot.tag == empty){ // do move
-                
                 int targetCol = [ self getXFromKey:key];
                 int targetRow = [ self getYFromKey:key];
                
                 // get the lowest empty slot
-                while ( [self getNextSlotTag:targetCol and: targetRow] == empty){
-                    targetRow -= 1;
-                }
-                
+                while ( [self getNextSlotTag:targetCol and: targetRow] == empty){ targetRow -= 1; }
                 
                 NSString *targetCoor = [self toTupleFrom:targetCol andY:targetRow];
                 CCSprite *targetSlot = _gameBoard[targetCoor];
                 
+                //TODO: need to adjust the size
                 NSString *color = isPlayerTurn?@"red.png": @"green.png";
                 CCSprite *movedRed = [CCSprite spriteWithFile:color
                                                          rect:CGRectMake(0, 0, 20, 20)];
                 
-
                 movedRed.position = ccp(oneSlot.position.x, (8+1)*[oneSlot boundingBox].size.height);
-                [ self addChild:movedRed];
+                [self addChild:movedRed];
                 
                 CGPoint movedDest = ccp(oneSlot.position.x, targetSlot.position.y);
-                
-                
+            
                 [self setTouchEnabled:NO];
 
+                //TODO: need to adjust the speed of falling piece
                 [movedRed runAction:
                  [CCSequence actions:
                   [CCMoveTo actionWithDuration: 1 position:movedDest],
                   [CCCallBlockN actionWithBlock:^(CCNode *node) {
-                    // [_projectiles removeObject:node];
                      [node removeFromParentAndCleanup:YES];
-                     
                      [targetSlot setTexture:[[CCTextureCache sharedTextureCache] addImage:color]];
                      
-                     
                      [self setTouchEnabled:YES];
-
+                     targetSlot.tag = isPlayerTurn?player:opponment;
+                     isPlayerTurn = !isPlayerTurn;
                      
+                     bool won = [self checkWin:targetCol and:targetRow with:targetSlot.tag];
+                     if (won)
+                         [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"background-music-aac.caf"];
+
+                     // call AI movement
                  }],
                   nil]];
-                
-        
-                targetSlot.tag = isPlayerTurn?player:opponment;
-                isPlayerTurn = !isPlayerTurn;
-               
-                bool won = [self checkWin:targetCol and:targetRow with:targetSlot.tag];
-                if (won)
-                    [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"background-music-aac.caf"];
-                    
 
             }
         }
@@ -271,11 +214,11 @@ enum{
 
 /* ====================================
  
- checkWin function checks if the current player wins after placing a knot,
- Pre: placedX: the x coordination of the placed knot
-      placedY: the y coordination of the placed knot
+ checkWin function checks if the current player wins after placing a piece,
+ Pre: placedX: the x coordination of the placed piece
+      placedY: the y coordination of the placed piece
       whosTurn: the tag of current player
- Post: return true if the current player connects N knots
+ Post: return true if the current player connects N pieces
  
 ==================================== */
 - (bool) checkWin:(int)placedX and:(int)placedY with:(NSInteger)whosTurn{
