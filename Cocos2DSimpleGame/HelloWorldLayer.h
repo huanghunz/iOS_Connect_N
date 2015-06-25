@@ -28,8 +28,11 @@
     
 }
 
-
 - (NSString*) toTupleFrom:(int)x andY: (int)y;
+- (int) getYFromKey:(id)key;
+- (int) getXFromKey:(id)key;
+- (NSInteger) getNextSlotTag:(int)x and: (int)y;
+- (bool) checkWin:(int)placedX and:(int)placedY with:(NSInteger)whosTurn;
 
 // returns a CCScene that contains the HelloWorldLayer as the only child
 +(CCScene *) scene;

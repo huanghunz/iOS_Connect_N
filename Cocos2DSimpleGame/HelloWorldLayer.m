@@ -269,123 +269,91 @@ enum{
 }
 
 
-- (bool) checkWin:(int)x and:(int)y with:(NSInteger)whosTurn{
+/* ====================================
+ 
+ checkWin function checks if the current player wins after placing a knot,
+ Pre: placedX: the x coordination of the placed knot
+      placedY: the y coordination of the placed knot
+      whosTurn: the tag of current player
+ Post: return true if the current player connects N knots
+ 
+==================================== */
+- (bool) checkWin:(int)placedX and:(int)placedY with:(NSInteger)whosTurn{
     // hor ver dia
-    int horConnected = 0, verConnected = 0, leftTopRightBotConnected = 0, RightTopLeftBotConnected = 0;
+    int horConnected = 0, verConnected = 0, leftTopRightBotConnected = 0, leftBotRightTopConnected = 0;
     int connectN = 4;
-    CCSprite *oneSlot = nil;
-    //int range = connectN*2+1;
     
-    for (int leftToRight = connectN*-1; leftToRight<= connectN; leftToRight++){
+    CCSprite *oneSlot = nil;
+    
+    for (int leftToRightRange = (-1*connectN)+1; leftToRightRange < connectN; leftToRightRange++){
         
         // horizontal
-        NSString* horKey = [self toTupleFrom:leftToRight+x andY:y];
+        NSString* horKey = [self toTupleFrom:leftToRightRange + placedX andY:placedY];
         if ( [_gameBoard objectForKey:horKey] != nil){
             oneSlot = _gameBoard[horKey];
-            if (horConnected == 4) return true;
+          
             
             horConnected = (oneSlot.tag == whosTurn)? horConnected+1 :0;
+            if (horConnected == connectN) return true;
         }
         
         // vertical
-        NSString* verKey = [self toTupleFrom:x andY:leftToRight+y];
-        if ( [_gameBoard objectForKey:horKey] != nil){
+        NSString* verKey = [self toTupleFrom:placedX andY:leftToRightRange+placedY];
+        if ( [_gameBoard objectForKey:verKey] != nil){
             oneSlot = _gameBoard[verKey];
-            if (verConnected == 4) return true;
+           
             
             verConnected = (oneSlot.tag == whosTurn)? verConnected+1 :0;
+            if (verConnected == connectN) return true;
             
         }
         
         // dia left top to right bot
-        NSString* leftTopKey = [self toTupleFrom:leftToRight+x andY:leftToRight+y];
-        if ( [_gameBoard objectForKey:leftTopKey] != nil){
-            oneSlot = _gameBoard[verKey];
-            if (leftTopRightBotConnected == 4) return true;
+        NSString* fromLeftTopKey = [self toTupleFrom:
+                                leftToRightRange + placedX andY: (-1)*leftToRightRange+placedY];
+        if ( [_gameBoard objectForKey:fromLeftTopKey] != nil){
+            oneSlot = _gameBoard[fromLeftTopKey];
             
-            leftTopRightBotConnected = (oneSlot.tag == whosTurn)? leftTopRightBotConnected+1 :0;
             
-        }
-
-        // dia right bot to left top
-        NSString* RightBotKey = [self toTupleFrom:leftToRight+x andY: leftToRight*-1 + y];
-        if ( [_gameBoard objectForKey:RightBotKey] != nil){
-            oneSlot = _gameBoard[verKey];
-            if (RightTopLeftBotConnected  == 4) return true;
-            
-           RightTopLeftBotConnected = (oneSlot.tag == whosTurn)? RightTopLeftBotConnected + 1 :0;
+            leftTopRightBotConnected = (oneSlot.tag == whosTurn)? leftTopRightBotConnected + 1 : 0;
+            if (leftTopRightBotConnected == connectN) return true;
             
         }
 
-        
+        // dia left bot to right top
+        NSString* fromLeftBotKey = [self toTupleFrom:
+                                 leftToRightRange + placedX andY: leftToRightRange + placedY];
+        if ( [_gameBoard objectForKey:fromLeftBotKey] != nil){
+            oneSlot = _gameBoard[fromLeftBotKey];
+           
+            leftBotRightTopConnected = (oneSlot.tag == whosTurn)? leftBotRightTopConnected + 1 : 0;
+            
+            if (leftBotRightTopConnected  == connectN) return true;
+            
+        }
+
     }
     
     return false;
-//    int connected = 0;
-//    
-//    
-//    // horzontal check
-//    for (int hor = x-4; hor <= x+4; hor++){
-//        NSString* key = [self toTupleFrom:hor andY:y];
-//        if ( [_gameBoard objectForKey:key] != nil){
-//            CCSprite *oneSlot = _gameBoard[key];
-//            if (connected == 4){
-//                return true;
-//            }
-//            if (oneSlot.tag == whosTurn){
-//                connected++;
-//            }
-//            else{
-//                connected =0;
-//            }
-//        }
-//    }
-//    
-//    // vertical check
-//    for (int ver = y-4; ver <= y+4; ver++){
-//        NSString* key = [self toTupleFrom:x andY:ver];
-//        if ( [_gameBoard objectForKey:key] != nil){
-//            CCSprite *oneSlot = _gameBoard[key];
-//            if (connected == 4){
-//                return true;
-//            }
-//            if (oneSlot.tag == whosTurn){
-//                connected++;
-//            }
-//            else{
-//                connected = 0;
-//            }
-//        }
-//        
-//    }
-//    
-//    for (int hor = x - 4; hor <= x+4; hor++){
-//        for (int topDownDia = 0; topDownDia <= y+4; topDownDia++ ){
-//            NSString* key = [self toTupleFrom:hor andY:topDownDia];
-//            if ( [_gameBoard] objectForKey:key] != nil){
-//                CCSprite *oneSlot = _gameBoard[key];
-//                if (connected == 4){
-//                    return true;
-//                }
-//                if (oneSlot.tag == whosTurn){
-//                    connected++;
-//                }
-//                else{
-//                    connected =0;
-//                }
-//            }
-//        }
-//    }
-  
 }
 
+/* ====================================
+ 
+toTupleFrom returns the string as key for the _gameBoard dictionary
+ Pre: x: the x coordination of a slot
+      y: the y coordination of a slot
+
+ Post: return a string (x,y) as key
+ ==================================== */
 - (NSString*) toTupleFrom:(int)x andY: (int)y{
-    
-    NSString *coor = [ NSString stringWithFormat: @"(%d,%d)",x, y];
-    
-    return coor;
+    return [ NSString stringWithFormat: @"(%d,%d)", x, y];
 }
 
+/* ====================================
+getYFromKey parses the string to x and y value
+ Pre: key: an id or a string that is a key in _gameBoard dictionary
+ Post: return the y value
+ ==================================== */
 - (int) getYFromKey:(id)key{
     NSString *tuple = (NSString*)key;
     NSString * yChar = [tuple substringWithRange:NSMakeRange(3, 1)];
@@ -394,6 +362,11 @@ enum{
     return y;
 };
 
+/* ====================================
+ getXFromKey parses the string to x and y value
+ Pre: key: an id or a string that is a key in _gameBoard dictionary
+ Post: return the x value
+ ==================================== */
 - (int) getXFromKey:(id)key{
     NSString *tuple = (NSString*)key;
     NSString * xChar = [tuple substringWithRange:NSMakeRange(1, 1)];
@@ -401,34 +374,6 @@ enum{
     
     return x;
 };
-
-- (CCSprite*) getNextSlot:(id)key{
-    //NSString *tuple = (NSString*)key;
-    int x = [self getXFromKey:key];
-    int y = [self getYFromKey:key];
-    CCSprite *lowerSlot = nil;
-    
-    if (y > 0){
-        y -= 1;
-        NSString* lowerCoor =  [self toTupleFrom:x andY:y];
-        lowerSlot = _gameBoard[lowerCoor];
-    }
-    
-    return lowerSlot;
-
-}
-
-- (CCSprite*) getNextSlot:(int)x and:(int)y{
-    CCSprite *lowerSlot = nil;
-    
-    if (y > 0){
-        y -= 1;
-        NSString* lowerCoor =  [self toTupleFrom:x andY:y];
-        lowerSlot = _gameBoard[lowerCoor];
-    }
-    
-    return lowerSlot;
-}
 
 - (NSInteger) getNextSlotTag:(int)x and: (int)y{
     
@@ -446,24 +391,6 @@ enum{
     }
 }
 
-- (NSInteger) getNextSlotTag:(id)key{
-    int x = [self getXFromKey:key];
-    int y = [self getYFromKey:key];
-    
-    CCSprite *lowerSlot;
-    
-    if (y > 0){
-        y -= 1;
-        NSString* lowerCoor =  [self toTupleFrom:x andY:y];
-        lowerSlot = _gameBoard[lowerCoor];
-        return lowerSlot.tag;
-    }
-    else{
-        NSInteger none = -99;
-        return none;
-    }
-    
-}
 
 
 
