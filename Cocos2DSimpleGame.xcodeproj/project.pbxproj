@@ -11,6 +11,7 @@
 		323053C01B38BDDE00F7924B /* red.png in Resources */ = {isa = PBXBuildFile; fileRef = 323053BD1B38BDDE00F7924B /* red.png */; };
 		323053C11B38BDDE00F7924B /* slot.png in Resources */ = {isa = PBXBuildFile; fileRef = 323053BE1B38BDDE00F7924B /* slot.png */; };
 		323655911B3CB1680049F1AF /* MCSTNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 323655901B3CB1680049F1AF /* MCSTNode.m */; };
+		32A8BF0F1B3D0A4000D2DA6E /* GameBoard.m in Sources */ = {isa = PBXBuildFile; fileRef = 32A8BF0E1B3D0A4000D2DA6E /* GameBoard.m */; };
 		35DC30A416530C7500862E62 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35DC30A316530C7500862E62 /* QuartzCore.framework */; };
 		35DC30A616530C7500862E62 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35DC30A516530C7500862E62 /* OpenGLES.framework */; };
 		35DC30A816530C7500862E62 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35DC30A716530C7500862E62 /* OpenAL.framework */; };
@@ -160,6 +161,8 @@
 		323053BE1B38BDDE00F7924B /* slot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = slot.png; sourceTree = "<group>"; };
 		3236558F1B3CB1680049F1AF /* MCSTNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MCSTNode.h; sourceTree = "<group>"; };
 		323655901B3CB1680049F1AF /* MCSTNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MCSTNode.m; sourceTree = "<group>"; };
+		32A8BF0D1B3D0A4000D2DA6E /* GameBoard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameBoard.h; sourceTree = "<group>"; };
+		32A8BF0E1B3D0A4000D2DA6E /* GameBoard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameBoard.m; sourceTree = "<group>"; };
 		35DC309F16530C7500862E62 /* Cocos2DSimpleGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cocos2DSimpleGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		35DC30A316530C7500862E62 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		35DC30A516530C7500862E62 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -517,6 +520,8 @@
 				35DC324016530CA300862E62 /* AppDelegate.m */,
 				35DC324216530CA300862E62 /* HelloWorldLayer.h */,
 				35DC324316530CA400862E62 /* HelloWorldLayer.m */,
+				32A8BF0D1B3D0A4000D2DA6E /* GameBoard.h */,
+				32A8BF0E1B3D0A4000D2DA6E /* GameBoard.m */,
 				3236558F1B3CB1680049F1AF /* MCSTNode.h */,
 				323655901B3CB1680049F1AF /* MCSTNode.m */,
 				35DC324516530CA400862E62 /* IntroLayer.h */,
@@ -1073,6 +1078,7 @@
 				35DC316516530C8B00862E62 /* CCScheduler.m in Sources */,
 				35DC317716530C8F00862E62 /* CCShaderCache.m in Sources */,
 				35DC317A16530C8F00862E62 /* ccShaders.m in Sources */,
+				32A8BF0F1B3D0A4000D2DA6E /* GameBoard.m in Sources */,
 				35DC317D16530C8F00862E62 /* CCSprite.m in Sources */,
 				35DC318016530C8F00862E62 /* CCSpriteBatchNode.m in Sources */,
 				35DC318316530C8F00862E62 /* CCSpriteFrame.m in Sources */,

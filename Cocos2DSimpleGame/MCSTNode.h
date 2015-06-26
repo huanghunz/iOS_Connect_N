@@ -15,17 +15,31 @@
     NSMutableArray *_gameBoardCopy;
     int numVisited;
     int numWins;
+    NSMutableArray *unTriedMoves;
     NSString* parentKey;
     MCSTNode *childrenNodes;
 }
 
--(id)init:(NSMutableArray*)gameBoard;
+-(id)init:(NSMutableDictionary*)gameBoard;
+
 -(NSString*) UCTSelectChild;
--(void)getAdjacent:(MCSTNode**) children;
+
+
 -(void)addChild:(MCSTNode *)child;
+
 -(MCSTNode*)getChild:(MCSTNode*)parent;
+
 -(void)updateSimScore:(int)wins and:(int)visited;
+
 -(NSString*) runMCS;
+
+-(int) getNumWins;
+-(int) getNumVisited;
+
+
+-(void)dealloc;
+
+
 
 
 

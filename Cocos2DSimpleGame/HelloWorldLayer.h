@@ -11,7 +11,7 @@
 
 // When you import this file, you import all the cocos2d classes
 #import "cocos2d.h"
-//#import "GameBoard.h"
+#import "GameBoard.h"
 #import "MCSTNode.h"
 
 // HelloWorldLayer
@@ -21,8 +21,10 @@
 @interface HelloWorldLayer : CCLayerColor
 {
     
-    NSMutableDictionary *_gameBoard;
+   // NSMutableDictionary *_gameBoard;
     bool isPlayerTurn;
+    GameBoard *_game;
+    int boardSize;
     
 }
 
