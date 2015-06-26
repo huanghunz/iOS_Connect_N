@@ -20,6 +20,7 @@
 // HelloWorldLayer implementation
 @implementation HelloWorldLayer
 
+int BOARD_SIZE = 8;
 enum{
     empty = 0,
     opponment = -1,
@@ -49,7 +50,7 @@ enum{
 - (id) init
 {
     if ((self = [super initWithColor:ccc4(255,255,255,255)])) {
-        int BOARD_SIZE = 8;
+        
         isPlayerTurn = true;
 
         CGSize winSize = [CCDirector sharedDirector].winSize;
@@ -145,7 +146,7 @@ enum{
                      [node removeFromParentAndCleanup:YES];
                      [targetSlot setTexture:[[CCTextureCache sharedTextureCache] addImage:color]];
                      
-                     [self setTouchEnabled:YES];
+                    // [self setTouchEnabled:YES];
                      targetSlot.tag = isPlayerTurn?player:opponment;
                      isPlayerTurn = !isPlayerTurn;
                      
@@ -153,7 +154,10 @@ enum{
                      if (won)
                          [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"background-music-aac.caf"];
 
-                     // call AI movement
+                     else{
+                         // call AI movement
+                         [self AIopponmentActs];
+                     }
                  }],
                   nil]];
 
@@ -164,41 +168,94 @@ enum{
     }
 }
 
+- (void) AIopponmentActs{
+    CCSprite* targetSlot = nil;
+    int randX = arc4random_uniform(BOARD_SIZE);
+    int randY = arc4random_uniform(BOARD_SIZE);
+    targetSlot = [self getSlotFrom:randX and:randY];
+    
+    while (targetSlot.tag != empty){
+        randX = arc4random_uniform(BOARD_SIZE);
+        randY = arc4random_uniform(BOARD_SIZE);
+        targetSlot = [self getSlotFrom:randX and:randY];
+
+    }
+    
+    while ( [self getNextSlotTag:randX and: randY] == empty){ randY -= 1; }
+    
+    NSString *color = isPlayerTurn?@"red.png": @"green.png";
+    CCSprite *AIMoved = [CCSprite spriteWithFile:color
+                                             rect:CGRectMake(0, 0, 20, 20)];
+    
+    targetSlot = [self getSlotFrom:randX and:randY];
+    
+    AIMoved.position = ccp(targetSlot.position.x, (8+1)*[targetSlot boundingBox].size.height);
+    [self addChild:AIMoved];
+    
+    CGPoint movedDest = ccp(targetSlot.position.x, targetSlot.position.y);
+
+    [AIMoved runAction:
+     [CCSequence actions:
+      [CCMoveTo actionWithDuration: 1 position:movedDest],
+      [CCCallBlockN actionWithBlock:^(CCNode *node) {
+         [node removeFromParentAndCleanup:YES];
+         [targetSlot setTexture:[[CCTextureCache sharedTextureCache] addImage:color]];
+         
+         [self setTouchEnabled:YES];
+         targetSlot.tag = isPlayerTurn?player:opponment;
+         isPlayerTurn = !isPlayerTurn;
+         
+         bool won = [self checkWin:randX and:randY with:targetSlot.tag];
+         if (won)
+             [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"background-music-aac.caf"];
+         
+         else{
+             // call AI movement
+         }
+     }],
+      nil]];
+
+    
+    
+}
+
+
+
 - (void)update:(ccTime)dt {
     
-    NSMutableArray *projectilesToDelete = [[NSMutableArray alloc] init];
-    for (CCSprite *projectile in _projectiles) {
-        
-        NSMutableArray *monstersToDelete = [[NSMutableArray alloc] init];
-        for (CCSprite *monster in _monsters) {
-            
-            if (CGRectIntersectsRect(projectile.boundingBox, monster.boundingBox)) {
-                [monstersToDelete addObject:monster];
-            }
-        }
-        
-        for (CCSprite *monster in monstersToDelete) {
-            [_monsters removeObject:monster];
-            [self removeChild:monster cleanup:YES];
-            
-            _monstersDestroyed++;
-            if (_monstersDestroyed > 30) {
-                CCScene *gameOverScene = [GameOverLayer sceneWithWon:YES];
-                [[CCDirector sharedDirector] replaceScene:gameOverScene];
-            }
-        }
-        
-        if (monstersToDelete.count > 0) {
-            [projectilesToDelete addObject:projectile];
-        }
-        [monstersToDelete release];
-    }
-    
-    for (CCSprite *projectile in projectilesToDelete) {
-        [_projectiles removeObject:projectile];
-        [self removeChild:projectile cleanup:YES];
-    }
-    [projectilesToDelete release];
+//    NSMutableArray *projectilesToDelete = [[NSMutableArray alloc] init];
+//    for (CCSprite *projectile in _projectiles) {
+//
+//        NSMutableArray *monstersToDelete = [[NSMutableArray alloc] init];
+//        for (CCSprite *monster in _monsters) {
+//            
+//            if (CGRectIntersectsRect(projectile.boundingBox, monster.boundingBox)) {
+//                [monstersToDelete addObject:monster];
+//            }
+//        }
+//        
+//        for (CCSprite *monster in monstersToDelete) {
+//            [_monsters removeObject:monster];
+//            [self removeChild:monster cleanup:YES];
+//            
+//            _monstersDestroyed++;
+//            if (_monstersDestroyed > 30) {
+//                CCScene *gameOverScene = [GameOverLayer sceneWithWon:YES];
+//                [[CCDirector sharedDirector] replaceScene:gameOverScene];
+//            }
+//        }
+//        
+//        if (monstersToDelete.count > 0) {
+//            [projectilesToDelete addObject:projectile];
+//        }
+//        [monstersToDelete release];
+//    }
+//    
+//    for (CCSprite *projectile in projectilesToDelete) {
+//        [_projectiles removeObject:projectile];
+//        [self removeChild:projectile cleanup:YES];
+//    }
+//    [projectilesToDelete release];
 }
 
 
@@ -210,7 +267,6 @@ enum{
  
     [super dealloc];
 }
-
 
 /* ====================================
  
@@ -304,7 +360,6 @@ getYFromKey parses the string to x and y value
     
     return y;
 };
-
 /* ====================================
  getXFromKey parses the string to x and y value
  Pre: key: an id or a string that is a key in _gameBoard dictionary
@@ -318,6 +373,11 @@ getYFromKey parses the string to x and y value
     return x;
 };
 
+/* ====================================
+ getXFromKey parses the string to x and y value
+ Pre: key: an id or a string that is a key in _gameBoard dictionary
+ Post: return the x value
+ ==================================== */
 - (NSInteger) getNextSlotTag:(int)x and: (int)y{
     
     CCSprite *lowerSlot;
@@ -334,7 +394,12 @@ getYFromKey parses the string to x and y value
     }
 }
 
-
+- (CCSprite*) getSlotFrom:(int)x and: (int)y{
+     NSString *key = [self toTupleFrom:x andY:y];
+    CCSprite* oneSlot = _gameBoard[key];
+    
+    return oneSlot;
+}
 
 
 #pragma mark GameKit delegate

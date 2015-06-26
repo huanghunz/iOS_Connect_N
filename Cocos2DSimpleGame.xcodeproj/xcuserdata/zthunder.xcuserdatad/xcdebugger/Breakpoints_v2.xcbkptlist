@@ -6,64 +6,64 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Cocos2DSimpleGame/HelloWorldLayer.m"
-            timestampString = "456896883.318257"
+            filePath = "Cocos2DSimpleGame/MCSTNode.m"
+            timestampString = "456965177.664888"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "271"
-            endingLineNumber = "271"
-            landmarkName = "-checkWin:and:with:"
+            startingLineNumber = "18"
+            endingLineNumber = "18"
+            landmarkName = "-init:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Cocos2DSimpleGame/HelloWorldLayer.m"
-            timestampString = "456896883.318257"
+            filePath = "Cocos2DSimpleGame/MCSTNode.m"
+            timestampString = "456965178.935384"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "267"
-            endingLineNumber = "267"
-            landmarkName = "-checkWin:and:with:"
+            startingLineNumber = "21"
+            endingLineNumber = "21"
+            landmarkName = "-init:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Cocos2DSimpleGame/HelloWorldLayer.m"
-            timestampString = "456896883.318257"
+            timestampString = "456969657.890113"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "268"
-            endingLineNumber = "268"
-            landmarkName = "-checkWin:and:with:"
+            startingLineNumber = "159"
+            endingLineNumber = "159"
+            landmarkName = "-ccTouchesEnded:withEvent:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Cocos2DSimpleGame/HelloWorldLayer.m"
-            timestampString = "456896883.318257"
+            timestampString = "456969761.075636"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "247"
-            endingLineNumber = "247"
-            landmarkName = "-checkWin:and:with:"
+            startingLineNumber = "177"
+            endingLineNumber = "177"
+            landmarkName = "-AIopponmentActs"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
