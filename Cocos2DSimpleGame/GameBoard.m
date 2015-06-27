@@ -13,12 +13,6 @@
 
 
 
-enum{
-    empty = 0,
-    opponment = -1,
-    player = 1
-};
-
 -(id)init:(CGSize)winSize{
     
     self->_gameBoard = [[NSMutableDictionary alloc] init];
@@ -37,19 +31,15 @@ enum{
             // Should be an ID
             emptySlot.tag = empty;
             
-            // the x, y position is the center of that object,
-            // if I do want to place them in "center" center,
-            // need to plus half the the width theoratically
+            // the x, y position is the center of that object, // if I do want to place them in "center" center, // need to plus half the the width theoratically
             
             float boardOriX = winSize.width/4;
             emptySlot.position = ccp(boardOriX+(col+1)*slotWidth, (row+1)*slotHeight);
             
             NSString *coor = [self toTupleFrom:col andY:row];
             
-            // add to the mutable array
+            // add to the mutable dictionary
             [_gameBoard setObject:emptySlot forKey:coor];
-            
-            // add to layer/canvas
             
         }
     }
@@ -195,19 +185,14 @@ enum{
 - (CCSprite*) getSlotFrom:(int)x and: (int)y{
     NSString *key = [self toTupleFrom:x andY:y];
     CCSprite* oneSlot = _gameBoard[key];
-    
     return oneSlot;
 }
 
+-(CCSprite*) getSlotFromKey:(id)key{ return  _gameBoard[key]; }
+-(NSMutableDictionary*)getGameBoard{ return self->_gameBoard; }
+-(int)getBoardSize{ return self->BOARD_SIZE; }
 
--(NSMutableDictionary*)getGameBoard{
-    return self->_gameBoard;
-    
-}
 
--(int)getBoardSize{
-    return self->BOARD_SIZE;
-}
 
 -(void)dealloc{
     [_gameBoard release];

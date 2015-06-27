@@ -9,9 +9,16 @@
 #import <Foundation/Foundation.h>
 #import "cocos2d.h"
 
+
+enum{
+    empty = 0,
+    opponment = -1,
+    player = 1
+};
+
 @interface GameBoard : CCNode {
     NSMutableDictionary *_gameBoard;
-    //bool isPlayerTurn;
+    bool isPlayerTurn;
     int BOARD_SIZE;
 }
 
@@ -23,17 +30,18 @@
 - (NSString*) toTupleFrom:(int)x andY: (int)y;
 - (int) getXFromKey:(id)key;
 - (int) getYFromKey:(id)key;
+
 - (CCSprite*) getSlotFrom:(int)x and: (int)y;
+- (CCSprite*) getSlotFromKey:(id)key;
 
 - (NSMutableDictionary* )getGameBoard;
 - (int)getBoardSize;
-
 
 
 - (NSInteger) getNextSlotTag:(int)x and: (int)y;
 
 
 - (bool) checkWin:(int)placedX and:(int)placedY with:(NSInteger)whosTurn;
-
+//- (void)applyMove;
 
 @end

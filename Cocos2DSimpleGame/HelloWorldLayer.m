@@ -20,12 +20,10 @@
 // HelloWorldLayer implementation
 @implementation HelloWorldLayer
 
+
 int BOARD_SIZE = 8;
-enum{
-    empty = 0,
-    opponment = -1,
-    player = 1
-};
+NSString *PLAYER_MOVED_IMG = @"red.png";
+NSString *AI_MOVED_IMG = @"green.png";
 
 // Helper class method that creates a Scene with the HelloWorldLayer as the only child.
 +(CCScene *) scene
@@ -111,16 +109,16 @@ enum{
                 CCSprite *targetSlot = _gameBoard[targetCoor];
                 
                 //TODO: need to adjust the size
-                NSString *color = isPlayerTurn?@"red.png": @"green.png";
+                NSString *color = PLAYER_MOVED_IMG;
                 CCSprite *playerMoved = [CCSprite spriteWithFile:color
                                                          rect:CGRectMake(0, 0, 20, 20)];
                 
-                playerMoved.position = ccp(oneSlot.position.x, (8+1)*[oneSlot boundingBox].size.height);
-                [self addChild:playerMoved];
-                
+                CGFloat startY = (8+1)*[targetSlot boundingBox].size.height;
+                playerMoved.position = ccp(targetSlot.position.x, startY );
                 CGPoint movedDest = ccp(oneSlot.position.x, targetSlot.position.y);
             
                 [self setTouchEnabled:NO];
+                [self addChild:playerMoved];
 
                 //TODO: need to adjust the speed of falling piece
                 [playerMoved runAction:
@@ -131,7 +129,7 @@ enum{
                      
                 
                     // [self setTouchEnabled:YES];
-                     targetSlot.tag = isPlayerTurn?player:opponment;
+                     targetSlot.tag = player;
                      isPlayerTurn = !isPlayerTurn;
                      
                     [targetSlot setTexture:[[CCTextureCache sharedTextureCache] addImage:color]];
@@ -143,7 +141,7 @@ enum{
 
                      else{
                          // call AI movement
-                         [self AIopponmentActs];
+                         //[self AIopponmentActs];
                      }
                  }],
                   nil]];
@@ -151,19 +149,24 @@ enum{
             }
         }
         
+        
        
     }
+    [self setTouchEnabled:YES];
 }
 
 - (void) AIopponmentActs{
     
     GameBoard *gameStateCopy = [[GameBoard alloc] initWithGame:_game];
-    NSMutableDictionary *_gameBoard = [gameStateCopy getGameBoard];
-    MCSTNode *think = [[MCSTNode alloc] init:_gameBoard] ;
+   // NSMutableDictionary *_gameBoard = [gameStateCopy getGameBoard];
+    
+    
+    // pass a copy to simulate
+    MCSTNode *think = [[MCSTNode alloc] initWithGame:gameStateCopy] ;
     int the = [think getNumVisited];
     NSLog(@"%i", the);
     
-    //return;
+    return;
     
     
     CCSprite* targetSlot = nil;
@@ -180,16 +183,18 @@ enum{
     
     while ( [_game getNextSlotTag:randX and: randY] == empty){ randY -= 1; }
     
-    NSString *color = isPlayerTurn?@"red.png": @"green.png";
+    NSString *color = AI_MOVED_IMG;
     CCSprite *AIMoved = [CCSprite spriteWithFile:color
                                              rect:CGRectMake(0, 0, 20, 20)];
     
     targetSlot = [_game getSlotFrom:randX and:randY];
     
-    AIMoved.position = ccp(targetSlot.position.x, (8+1)*[targetSlot boundingBox].size.height);
-    [self addChild:AIMoved];
+    CGFloat startY = (8+1)*[targetSlot boundingBox].size.height;
+    AIMoved.position = ccp(targetSlot.position.x, startY );
     
     CGPoint movedDest = ccp(targetSlot.position.x, targetSlot.position.y);
+    
+    [self addChild:AIMoved];
 
     [AIMoved runAction:
      [CCSequence actions:
@@ -199,7 +204,7 @@ enum{
          [targetSlot setTexture:[[CCTextureCache sharedTextureCache] addImage:color]];
          
         
-         targetSlot.tag = isPlayerTurn?player:opponment;
+         targetSlot.tag = opponment;
          isPlayerTurn = !isPlayerTurn;
          
          bool won = [_game checkWin:randX and:randY with:targetSlot.tag];
@@ -220,39 +225,7 @@ enum{
 
 - (void)update:(ccTime)dt {
     
-//    NSMutableArray *projectilesToDelete = [[NSMutableArray alloc] init];
-//    for (CCSprite *projectile in _projectiles) {
-//
-//        NSMutableArray *monstersToDelete = [[NSMutableArray alloc] init];
-//        for (CCSprite *monster in _monsters) {
-//            
-//            if (CGRectIntersectsRect(projectile.boundingBox, monster.boundingBox)) {
-//                [monstersToDelete addObject:monster];
-//            }
-//        }
-//        
-//        for (CCSprite *monster in monstersToDelete) {
-//            [_monsters removeObject:monster];
-//            [self removeChild:monster cleanup:YES];
-//            
-//            _monstersDestroyed++;
-//            if (_monstersDestroyed > 30) {
-//                CCScene *gameOverScene = [GameOverLayer sceneWithWon:YES];
-//                [[CCDirector sharedDirector] replaceScene:gameOverScene];
-//            }
-//        }
-//        
-//        if (monstersToDelete.count > 0) {
-//            [projectilesToDelete addObject:projectile];
-//        }
-//        [monstersToDelete release];
-//    }
-//    
-//    for (CCSprite *projectile in projectilesToDelete) {
-//        [_projectiles removeObject:projectile];
-//        [self removeChild:projectile cleanup:YES];
-//    }
-//    [projectilesToDelete release];
+
 }
 
 
@@ -264,139 +237,6 @@ enum{
  
     [super dealloc];
 }
-//
-///* ====================================
-// 
-// checkWin function checks if the current player wins after placing a piece,
-// Pre: placedX: the x coordination of the placed piece
-//      placedY: the y coordination of the placed piece
-//      whosTurn: the tag of current player
-// Post: return true if the current player connects N pieces
-// 
-//==================================== */
-//- (bool) checkWin:(int)placedX and:(int)placedY with:(NSInteger)whosTurn{
-//    // hor ver dia
-//    int horConnected = 0, verConnected = 0, leftTopRightBotConnected = 0, leftBotRightTopConnected = 0;
-//    int connectN = 4;
-//    
-//    CCSprite *oneSlot = nil;
-//    
-//    for (int leftToRightRange = (-1*connectN)+1; leftToRightRange < connectN; leftToRightRange++){
-//        
-//        // horizontal
-//        NSString* horKey = [self toTupleFrom:leftToRightRange + placedX andY:placedY];
-//        if ( [_gameBoard objectForKey:horKey] != nil){
-//            oneSlot = _gameBoard[horKey];
-//          
-//            
-//            horConnected = (oneSlot.tag == whosTurn)? horConnected+1 :0;
-//            if (horConnected == connectN) return true;
-//        }
-//        
-//        // vertical
-//        NSString* verKey = [self toTupleFrom:placedX andY:leftToRightRange+placedY];
-//        if ( [_gameBoard objectForKey:verKey] != nil){
-//            oneSlot = _gameBoard[verKey];
-//           
-//            
-//            verConnected = (oneSlot.tag == whosTurn)? verConnected+1 :0;
-//            if (verConnected == connectN) return true;
-//            
-//        }
-//        
-//        // dia left top to right bot
-//        NSString* fromLeftTopKey = [self toTupleFrom:
-//                                leftToRightRange + placedX andY: (-1)*leftToRightRange+placedY];
-//        if ( [_gameBoard objectForKey:fromLeftTopKey] != nil){
-//            oneSlot = _gameBoard[fromLeftTopKey];
-//            
-//            
-//            leftTopRightBotConnected = (oneSlot.tag == whosTurn)? leftTopRightBotConnected + 1 : 0;
-//            if (leftTopRightBotConnected == connectN) return true;
-//            
-//        }
-//
-//        // dia left bot to right top
-//        NSString* fromLeftBotKey = [self toTupleFrom:
-//                                 leftToRightRange + placedX andY: leftToRightRange + placedY];
-//        if ( [_gameBoard objectForKey:fromLeftBotKey] != nil){
-//            oneSlot = _gameBoard[fromLeftBotKey];
-//           
-//            leftBotRightTopConnected = (oneSlot.tag == whosTurn)? leftBotRightTopConnected + 1 : 0;
-//            
-//            if (leftBotRightTopConnected  == connectN) return true;
-//            
-//        }
-//
-//    }
-//    
-//    return false;
-//}
-//
-///* ====================================
-// 
-//toTupleFrom returns the string as key for the _gameBoard dictionary
-// Pre: x: the x coordination of a slot
-//      y: the y coordination of a slot
-//
-// Post: return a string (x,y) as key
-// ==================================== */
-//- (NSString*) toTupleFrom:(int)x andY: (int)y{
-//    return [ NSString stringWithFormat: @"(%d,%d)", x, y];
-//}
-//
-///* ====================================
-//getYFromKey parses the string to x and y value
-// Pre: key: an id or a string that is a key in _gameBoard dictionary
-// Post: return the y value
-// ==================================== */
-//- (int) getYFromKey:(id)key{
-//    NSString *tuple = (NSString*)key;
-//    NSString * yChar = [tuple substringWithRange:NSMakeRange(3, 1)];
-//    int y = [yChar intValue];
-//    
-//    return y;
-//};
-///* ====================================
-// getXFromKey parses the string to x and y value
-// Pre: key: an id or a string that is a key in _gameBoard dictionary
-// Post: return the x value
-// ==================================== */
-//- (int) getXFromKey:(id)key{
-//    NSString *tuple = (NSString*)key;
-//    NSString * xChar = [tuple substringWithRange:NSMakeRange(1, 1)];
-//    int x = [xChar intValue];
-//    
-//    return x;
-//};
-//
-///* ====================================
-// getXFromKey parses the string to x and y value
-// Pre: key: an id or a string that is a key in _gameBoard dictionary
-// Post: return the x value
-// ==================================== */
-//- (NSInteger) getNextSlotTag:(int)x and: (int)y{
-//    
-//    CCSprite *lowerSlot;
-//    
-//    if (y > 0){
-//        y -= 1;
-//        NSString* lowerCoor =  [self toTupleFrom:x andY:y];
-//        lowerSlot = _gameBoard[lowerCoor];
-//        return lowerSlot.tag;
-//    }
-//    else{
-//        NSInteger none = -99;
-//        return none;
-//    }
-//}
-//
-//- (CCSprite*) getSlotFrom:(int)x and: (int)y{
-//     NSString *key = [self toTupleFrom:x andY:y];
-//    CCSprite* oneSlot = _gameBoard[key];
-//    
-//    return oneSlot;
-//}
 
 
 #pragma mark GameKit delegate

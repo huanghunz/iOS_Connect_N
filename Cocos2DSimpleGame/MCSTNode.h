@@ -6,23 +6,27 @@
 //  Copyright 2015 Razeware LLC. All rights reserved.
 //
 
+#import "GameBoard.h"
 #import <Foundation/Foundation.h>
 #import "cocos2d.h"
 
 
+
 @interface MCSTNode : CCNode {
     
-    NSMutableArray *_gameBoardCopy;
+    GameBoard *_gameStateCopy;
+    NSMutableDictionary *_gameBoardCopy;
+    int boardSize;
     int numVisited;
     int numWins;
-    NSMutableArray *unTriedMoves;
+    NSMutableArray *unTriedMoves;// store the empty slot
     NSString* parentKey;
     MCSTNode *childrenNodes;
 }
 
--(id)init:(NSMutableDictionary*)gameBoard;
+-(id)initWithGame:(GameBoard*)game;
 
--(NSString*) UCTSelectChild;
+-(MCSTNode*) UCTSelectChild;
 
 
 -(void)addChild:(MCSTNode *)child;
