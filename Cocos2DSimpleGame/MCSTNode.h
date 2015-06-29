@@ -14,14 +14,20 @@
 
 @interface MCSTNode : CCNode {
     
-    GameBoard *_gameStateCopy;
-    NSMutableDictionary *_gameBoardCopy;
-    int boardSize;
+    
+    NSString *move;
+    
     int numVisited;
     int numWins;
-    NSMutableArray *unTriedMoves;// store the empty slot
-    NSString* parentKey;
+    
+    MCSTNode *parentNode;
     MCSTNode *childrenNodes;
+    
+    
+    NSMutableArray *children;
+    NSMutableArray *unTriedMoves;// store the empty slot
+    NSInteger whoJustMoved;
+
 }
 
 -(id)initWithGame:(GameBoard*)game;
@@ -29,13 +35,13 @@
 -(MCSTNode*) UCTSelectChild;
 
 
--(void)addChild:(MCSTNode *)child;
+-(void)addChild:(NSString*)key withGame:(GameBoard*)gameCopy;
 
--(MCSTNode*)getChild:(MCSTNode*)parent;
+-(MCSTNode*)getNewestChild;
 
--(void)updateSimScore:(int)wins and:(int)visited;
+-(void)updateSimScore:(int)eval;
 
--(NSString*) runMCS;
+-(NSString*) runMCS:(GameBoard*) gameState;
 
 -(int) getNumWins;
 -(int) getNumVisited;

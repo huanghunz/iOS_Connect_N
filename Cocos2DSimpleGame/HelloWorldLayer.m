@@ -93,7 +93,9 @@ NSString *AI_MOVED_IMG = @"green.png";
     NSMutableDictionary *_gameBoard = [_game getGameBoard];
     
     for ( id key in _gameBoard){
+       
         CCSprite *oneSlot = _gameBoard[key];
+       // NSLog(@"%d", oneSlot.tag);
         
         //TODO: need some arrow above the slots
         if (CGRectContainsPoint(oneSlot.boundingBox, location)){
@@ -125,54 +127,49 @@ NSString *AI_MOVED_IMG = @"green.png";
                  [CCSequence actions:
                   [CCMoveTo actionWithDuration: 1 position:movedDest],
                   [CCCallBlockN actionWithBlock:^(CCNode *node) {
-                     [node removeFromParentAndCleanup:YES];
-                     
-                
-                    // [self setTouchEnabled:YES];
-                     targetSlot.tag = player;
-                     isPlayerTurn = !isPlayerTurn;
-                     
-                    [targetSlot setTexture:[[CCTextureCache sharedTextureCache] addImage:color]];
-                     bool won = [ _game checkWin:targetCol and:targetRow with:targetSlot.tag];
-                     
-                     
-                     if (won)
-                         [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"background-music-aac.caf"];
+                        [node removeFromParentAndCleanup:YES];
+                        [targetSlot setTexture:[[CCTextureCache sharedTextureCache] addImage:color]];
+                        [ _game applyAction:targetSlot];
 
-                     else{
+                        bool won = [ _game checkWin:targetCol and:targetRow with:targetSlot.tag];
+
+                        if (won)
+                            [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"background-music-aac.caf"];
+
+                        else{
                          // call AI movement
-                         //[self AIopponmentActs];
-                     }
+                         [self AIopponmentActs];
+                        }
                  }],
                   nil]];
-
+                
             }
         }
         
-        
-       
     }
-    [self setTouchEnabled:YES];
-}
+   }
 
 - (void) AIopponmentActs{
     
-    GameBoard *gameStateCopy = [[GameBoard alloc] initWithGame:_game];
+    GameBoard *gameStateCopy = [[GameBoard alloc] makeGameCopy:_game];
    // NSMutableDictionary *_gameBoard = [gameStateCopy getGameBoard];
     
     
     // pass a copy to simulate
     MCSTNode *think = [[MCSTNode alloc] initWithGame:gameStateCopy] ;
-    int the = [think getNumVisited];
-    NSLog(@"%i", the);
     
-    return;
-    
+    NSString *MCSTkey = [think runMCS:gameStateCopy];
     
     CCSprite* targetSlot = nil;
+    
+    NSMutableDictionary *board = [_game getGameBoard];
+    
+    targetSlot = board[MCSTkey];
+
+    
     int randX = arc4random_uniform(BOARD_SIZE);
     int randY = arc4random_uniform(BOARD_SIZE);
-    targetSlot = [_game getSlotFrom:randX and:randY];
+   // targetSlot = [_game getSlotFrom:randX and:randY];
     
     while (targetSlot.tag != empty){
         randX = arc4random_uniform(BOARD_SIZE);
@@ -188,6 +185,7 @@ NSString *AI_MOVED_IMG = @"green.png";
                                              rect:CGRectMake(0, 0, 20, 20)];
     
     targetSlot = [_game getSlotFrom:randX and:randY];
+    targetSlot = board[MCSTkey];
     
     CGFloat startY = (8+1)*[targetSlot boundingBox].size.height;
     AIMoved.position = ccp(targetSlot.position.x, startY );
@@ -203,16 +201,17 @@ NSString *AI_MOVED_IMG = @"green.png";
          [node removeFromParentAndCleanup:YES];
          [targetSlot setTexture:[[CCTextureCache sharedTextureCache] addImage:color]];
          
-        
-         targetSlot.tag = opponment;
-         isPlayerTurn = !isPlayerTurn;
+        [ _game applyAction:targetSlot];
          
-         bool won = [_game checkWin:randX and:randY with:targetSlot.tag];
+         int x = [_game getXFromKey:MCSTkey];
+         int y = [_game getYFromKey:MCSTkey];
+
+         bool won = [_game checkWin:x and:y with:targetSlot.tag];
          if (won)
              [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"background-music-aac.caf"];
          
          else{
-              [self setTouchEnabled:YES];
+            [self setTouchEnabled:YES];
          }
      }],
       nil]];
@@ -220,7 +219,6 @@ NSString *AI_MOVED_IMG = @"green.png";
     
     
 }
-
 
 
 - (void)update:(ccTime)dt {

@@ -18,12 +18,12 @@ enum{
 
 @interface GameBoard : CCNode {
     NSMutableDictionary *_gameBoard;
-    bool isPlayerTurn;
+    bool playersTurn;
     int BOARD_SIZE;
 }
 
 - (id)init:(CGSize)winSize;
-- (id)initWithGame:(GameBoard*)game;
+- (GameBoard*)makeGameCopy:(GameBoard*)game;
 
 - (void) dealloc;
 
@@ -36,12 +36,17 @@ enum{
 
 - (NSMutableDictionary* )getGameBoard;
 - (int)getBoardSize;
+- (bool)isPlayerTurn;
 
 
 - (NSInteger) getNextSlotTag:(int)x and: (int)y;
-
+-(void)applyAction:(int)targetCol and:(int)targetRow;
+-(void)applyAction:(CCSprite*)targetSlot;
 
 - (bool) checkWin:(int)placedX and:(int)placedY with:(NSInteger)whosTurn;
+- (NSMutableArray*)getAvailableSlots;
+- (int) evaluateState:(int)placedX andY:(int)placedY of:(NSInteger) whosTurn;
+
 //- (void)applyMove;
 
 @end
