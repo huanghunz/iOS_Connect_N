@@ -52,7 +52,6 @@ NSString *AI_MOVED_IMG = @"green_50.png";
         _game = [[GameBoard alloc] init:(winSize) andN:winN];
       
         boardSize = [ _game getBoardSize];
-        isPlayerTurn = true;
     
         boardOriX = winSize.width/4;
         _arrowCol = [[NSMutableArray alloc] init];
@@ -137,6 +136,7 @@ NSString *AI_MOVED_IMG = @"green_50.png";
         
         [self setTouchEnabled:NO];
         [self runAnimation:targetCol andY:targetRow withState:targetSlot];
+       // [self applyState:targetCol andY:targetRow withStateTag:[targetSlot getState]];
 
     }
 }
@@ -196,6 +196,7 @@ NSString *AI_MOVED_IMG = @"green_50.png";
         [newMoved runAction:
          [CCSequence actions:
           [CCMoveTo actionWithDuration: 1 position:movedDest],
+          [CCDelayTime actionWithDuration:0.5],
           [CCCallBlockN actionWithBlock:^(CCNode *node){
              animationRuning = false;
              [self runAnimation:targetCol andY:targetRow withState:state];
@@ -203,29 +204,35 @@ NSString *AI_MOVED_IMG = @"green_50.png";
          }],
           nil]];
 
-            }
+        }
     if (!animationRuning){
         animationStarted = false;
-        [ _game applyAction:state];
         
-        bool won = [ _game checkWin:targetCol and:targetRow with:[state getState]];
-        
-        if (won){
-            [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"background-music-aac.caf"];
-            [_game setGameEnded];
-        }
-        else{
-            // call AI movement
-            //     [self AIopponmentActs];
-            if (![_game isPlayerTurn] )
-                [self AIopponmentActs];
-            else
-                [self setTouchEnabled:YES];
-        }
-        
+      
+        [self applyState:targetCol andY:targetRow with:state];
         
         // animationRuning = false;
     }
+}
+
+-(void) applyState:(int)targetCol andY:(int)targetRow with:(GameState*)state{
+    [ _game applyAction:state];
+    
+    bool won = [ _game checkWin:targetCol and:targetRow with:[state getState]];
+    
+    if (won){
+        [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"background-music-aac.caf"];
+        [self gameOver];
+    }
+    else{
+        
+        if (![_game isPlayerTurn] )
+            [self AIopponmentActs];
+        else
+            [self setTouchEnabled:YES];
+    }
+    
+
 }
 
 // on "dealloc" you need to release all your retained objects
@@ -233,10 +240,17 @@ NSString *AI_MOVED_IMG = @"green_50.png";
 {
     [_game release];
     _game = nil;
+    [_arrowCol release];
+    _arrowCol =nil;
  
     [super dealloc];
 }
 
+-(void)gameOver{
+    bool playerWins = ([_game isPlayerTurn])?false:true;
+    CCScene *endGameScene = [ GameOverLayer sceneWithWon:playerWins ];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:2.0 scene:endGameScene ]];
+}
 
 #pragma mark GameKit delegate
 

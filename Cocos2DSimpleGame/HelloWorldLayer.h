@@ -22,13 +22,10 @@
 
 @interface HelloWorldLayer : CCLayerColor
 {
-    
-   // NSMutableDictionary *_gameBoard;
-    bool isPlayerTurn;
     GameBoard *_game;
-    int boardSize;
+
     int connectNGame;
-    GameState *one;
+    int boardSize;
     float boardOriX;
     NSMutableArray *_arrowCol;
     bool animationStarted;

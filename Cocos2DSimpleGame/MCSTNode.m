@@ -133,7 +133,7 @@
         // find the most urgent kid from a given formula
         while ([curNode->unTriedMoves count] == 0 && [curNode->children count] != 0) {
             curNode = [self UCTSelectChild];
-            CCSprite *targetSlot = gameBoard[curNode->move];
+            GameState *targetSlot = gameBoard[curNode->move];
            
             [gameStateCopy applyAction:targetSlot];
         
@@ -146,7 +146,7 @@
         if (numUnTried != 0){
             int randomIndex = arc4random_uniform(numUnTried);
             NSString *randomKey = [ curNode->unTriedMoves objectAtIndex:randomIndex];
-            CCSprite *targetSlot = gameBoard[randomKey];
+            GameState *targetSlot = gameBoard[randomKey];
             
           
             [gameStateCopy applyAction:targetSlot];
@@ -167,7 +167,7 @@
             depth--;
             int randomIndex = arc4random_uniform([availableSlots count]);
             NSString *randomKey = [ availableSlots objectAtIndex:randomIndex];
-            CCSprite *targetSlot = gameBoard[randomKey];
+            GameState *targetSlot = gameBoard[randomKey];
             [gameStateCopy applyAction:targetSlot];
            
             availableSlots = [gameStateCopy getAvailableSlots];
