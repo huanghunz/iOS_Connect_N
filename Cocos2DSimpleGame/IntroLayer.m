@@ -11,7 +11,6 @@
 #import "IntroLayer.h"
 #import "HelloWorldLayer.h"
 
-
 #pragma mark - IntroLayer
 
 // HelloWorldLayer implementation
@@ -33,34 +32,83 @@
     return scene;
 }
 
-//
+
+
 -(id) init
 {
-    if( (self=[super init])) {
-        
-        // ask director for the window size
-        CGSize size = [[CCDirector sharedDirector] winSize];
-        
-        CCSprite *background;
-        
-        if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ) {
-            background = [CCSprite spriteWithFile:@"Default.png"];
-            background.rotation = 90;
-        } else {
-            background = [CCSprite spriteWithFile:@"Default-Landscape~ipad.png"];
-        }
-        background.position = ccp(size.width/2, size.height/2);
-        
-        // add the label as a child to this Layer
-        [self addChild: background];
-    }
-    
+   if ((self = [super initWithColor:ccc4(00,00,00,255)])) {
+       
+       CGSize winSize = [[CCDirector sharedDirector] winSize];
+       
+       // Create a label for display purposes
+       _label = [[CCLabelTTF labelWithString:@"Please choose a mode: \n(connect-N:if you connect your pieces\n horizontally, vertically or diagonally with N pieces, you win." fontName:@"Arial" fontSize:11.0 dimensions:CGSizeMake(winSize.width, 100)  hAlignment:UITextAlignmentCenter] retain];
+       
+       _label.position = ccp(winSize.width/2,
+                            winSize.height-100);
+       
+       [ _label setColor:ccc3(100,100,0)];
+       [self addChild:_label];
+       
+       // creating buttons.
+       _connect3 = [ CCMenuItemImage itemWithNormalImage:@"connect3.png" selectedImage:@"connect3-pressed.png" target:self selector:@selector(starButtonTapped:)];
+       _connect3.position = ccp(winSize.width/2, 180);
+       
+       _connect4 = [ CCMenuItemImage itemWithNormalImage:@"connect4.png" selectedImage:@"connect4-pressed.png" target:self selector:@selector(starButtonTapped:)];
+       _connect4.position = ccp(winSize.width/2, 160);
+
+       _connect5 = [ CCMenuItemImage itemWithNormalImage:@"connect5.png" selectedImage:@"connect5-pressed.png" target:self selector:@selector(starButtonTapped:)];
+       _connect5.position = ccp(winSize.width/2, 140);
+
+       _quit = [ CCMenuItemImage itemWithNormalImage:@"quit.png" selectedImage:@"Quit.png" target:self selector:@selector(starButtonTapped:)];
+       _quit.position = ccp(winSize.width/2, 120);
+
+       
+       // display buttons
+       CCMenu *starMenu = [CCMenu menuWithItems: _connect3, _connect4, _connect5, _quit, nil];
+       starMenu.position = CGPointZero;
+       
+       [self addChild:starMenu];
+ 
+   }
     return self;
 }
 
--(void) onEnter
-{
-    [super onEnter];
-    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:1.0 scene:[HelloWorldLayer scene] ]];
+
+- (void)starButtonTapped:(id)sender {
+    
+    int chosenN = 0;
+    CCMenuItem *pressedItem = ( CCMenuItem *)sender;
+
+    if (pressedItem == _connect3) {
+        chosenN = 3;
+    } else if (pressedItem == _connect4) {
+        chosenN = 4;
+    }
+    else if (pressedItem == _connect5){
+        chosenN =5;
+    }
+    else{
+        [[CCDirector sharedDirector] end];
+        exit(0);
+    }
+    
+    NSString *message = [NSString stringWithFormat:@"Game Mode: Connect-%d", chosenN];
+    [_label setString:  message];
+    
+    [ message release];
+    
+    // pass var to game layer
+    CCScene *startGameScene = [ HelloWorldLayer scene:chosenN ];
+    [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:2.0 scene:startGameScene ]];
+    
 }
+
+
+- (void) dealloc
+{
+    [super dealloc];
+}
+
+
+
 @end

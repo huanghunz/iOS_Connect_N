@@ -27,7 +27,9 @@
     bool isPlayerTurn;
     GameBoard *_game;
     int boardSize;
-    
+    int connectNGame;
+    GameState *one;
+       
 }
 
 //- (NSString*) toTupleFrom:(int)x andY: (int)y;
@@ -37,6 +39,6 @@
 //- (bool) checkWin:(int)placedX and:(int)placedY with:(NSInteger)whosTurn;
 
 // returns a CCScene that contains the HelloWorldLayer as the only child
-+(CCScene *) scene;
++(CCScene *) scene:(int)n;
 
 @end

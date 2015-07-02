@@ -18,7 +18,7 @@
     NSString *move;
     
     int numVisited;
-    int numWins;
+    float numWins;
     
     MCSTNode *parentNode;
     MCSTNode *childrenNodes;
@@ -39,7 +39,7 @@
 
 -(MCSTNode*)getNewestChild;
 
--(void)updateSimScore:(int)eval;
+-(void)updateSimScore:(float)eval;
 
 -(NSString*) runMCS:(GameBoard*) gameState;
 
@@ -48,8 +48,6 @@
 
 
 -(void)dealloc;
-
-
 
 
 

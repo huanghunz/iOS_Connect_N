@@ -8,16 +8,15 @@
 
 #import "GameBoard.h"
 
-
 @implementation GameBoard
 
 
-
--(id)init:(CGSize)winSize{
+-(id)init:(CGSize)winSize andN:(int)n{
     
     self->_gameBoard = [[NSMutableDictionary alloc] init];
     self->BOARD_SIZE = 8;
     self->playersTurn = true;
+    self->_connectN = n;
     
     CCSprite *emptySlot = [CCSprite spriteWithFile:@"slot.png"];
     
@@ -27,20 +26,24 @@
     for (int row = 0; row < BOARD_SIZE; row++ ){
         
         for ( int col = 0; col < BOARD_SIZE; col++){
+           
             CCSprite *emptySlot = [CCSprite spriteWithFile:@"slot.png"
                                                       rect:CGRectMake(0, 0, 25, 25)];
-            // Should be an ID
+            //slot state
             emptySlot.tag = empty;
-            
-            // the x, y position is the center of that object, // if I do want to place them in "center" center, // need to plus half the the width theoratically
             
             float boardOriX = winSize.width/4;
             emptySlot.position = ccp(boardOriX+(col+1)*slotWidth, (row+1)*slotHeight);
-            
+             emptySlot.anchorPoint = ccp(.0f, .0f);
+            CGRect newBox = CGRectMake(boardOriX+(col+1)*25, (row+1)*25, 25, 25);
+
             NSString *coor = [self toTupleFrom:col andY:row];
+            GameState *newState = [[GameState alloc] initWithBoxLocaton:newBox andState:empty];
+            
             
             // add to the mutable dictionary
-            [self->_gameBoard setObject:emptySlot forKey:coor];
+            [self->_gameBoard setObject:newState forKey:coor];
+            
             
         }
     }
@@ -52,6 +55,8 @@
 - (GameBoard*)makeGameCopy:(GameBoard*)game{
     
     GameBoard *copy = [GameBoard alloc];
+    
+    copy->_connectN = game->_connectN;
   
     copy->BOARD_SIZE = [game getBoardSize];
     
@@ -88,7 +93,7 @@
 - (bool) checkWin:(int)placedX and:(int)placedY with:(NSInteger)whosTurn{
     // hor ver dia
     int horConnected = 0, verConnected = 0, leftTopRightBotConnected = 0, leftBotRightTopConnected = 0;
-    int connectN = 4;
+    int connectN = self->_connectN;
     
     CCSprite *oneSlot = nil;
     
@@ -211,7 +216,6 @@
 
 
 
-
 -(int)getBoardSize{ return self->BOARD_SIZE; }
 
 -(void)dealloc{
@@ -226,28 +230,15 @@
     NSString *targetCoor = [ self toTupleFrom:targetCol andY:targetRow];
     CCSprite *targetSlot = _gameBoard[targetCoor];
     
-    NSLog(@"==== before assign: %d", targetSlot.tag);
     targetSlot.tag = playersTurn?player: opponment;
-    NSLog(@"---- after assign: %d", targetSlot.tag);
     playersTurn = !playersTurn;
 
     
 }
 -(void)applyAction:(CCSprite*)targetSlot{
-    NSLog(@"==== before assign: %d", targetSlot.tag);
+   
     targetSlot.tag = playersTurn? player: opponment;
-    
-    if (playersTurn){
-        targetSlot.tag = player;
-    }
-    else{
-        targetSlot.tag = opponment;
-    }
-    NSLog(@"---- after assign: %d", targetSlot.tag);
     playersTurn = !playersTurn;
-    if (playersTurn){
-        NSLog(@"yes");
-    }
     
 }
 
@@ -274,43 +265,114 @@
     return  availableSlots;
 }
 
-- (int) evaluateState:(int)placedX andY:(int)placedY of:(NSInteger) whosTurn{
+-(float) evaluateState:(int)placedX andY:(int)placedY of:(NSInteger) whosTurn{
+    
+    bool eval = [ self checkWin:placedX and:placedY with:whosTurn];
+    if (eval){
+        return 1.0;
+    }
+    else{
+        NSInteger oppsitePlayer =  (whosTurn == player)?opponment:player;
+        for ( id keyId in _gameBoard){
+            NSString *key = (NSString*) keyId;
+            CCSprite *oneSlot = _gameBoard[key];
+            
+            if (oneSlot.tag == oppsitePlayer){
+                int x = [self getXFromKey:key];
+                int y = [self getYFromKey:key];
+                bool lost = [ self opponmentAlmostWin:x andY:y of:oppsitePlayer];
+                if (lost){
+                    return  -1;
+                }
+                
+            }
+        }
+    }
+    
+    return 0.5;
+    
+}
+
+- (bool)opponmentAlmostWin:(int)placedX andY:(int)placedY of:(NSInteger)whosTurn{
+    
     int horConnected = 0, verConnected = 0, leftTopRightBotConnected = 0, leftBotRightTopConnected = 0;
-    int horAvailable = 0, verAvailable = 0, leftTopRightBotAvailable = 0, leftBotRightTopAvailable = 0;
-   // int horEnemy = 0, verEnemy = 0, leftTopEnemy =0, leftBotEnemy = 0;
     
-    int connectN = 4;
+    int connectN = self->_connectN;
     
-    NSInteger oppsitePlayer = (whosTurn == player)?opponment:player;
+   NSInteger oppsitePlayer = (whosTurn == player)?opponment:player;
     
     CCSprite *oneSlot = nil;
+    NSMutableArray *avaiSlots = [[NSMutableArray alloc] init];
+    avaiSlots = [self getAvailableSlots];
     
     for (int leftToRightRange = (-1*connectN)+1; leftToRightRange < connectN; leftToRightRange++){
         
+        
         // horizontal
         NSString* horKey = [self toTupleFrom:leftToRightRange + placedX andY:placedY];
+        
         if ( [_gameBoard objectForKey:horKey] != nil){
+            
+            
             oneSlot = _gameBoard[horKey];
+            horConnected = (oneSlot.tag == whosTurn)? horConnected + 1 :0;
+            
+            int beforeConnectedX = leftToRightRange + placedX - horConnected;
+            int afterConnectedX = leftToRightRange + placedX + 1;
+            
+            CCSprite *beforeSlot = _gameBoard[[self toTupleFrom:beforeConnectedX andY:placedY]];
+            CCSprite *afterSlot = _gameBoard[[ self toTupleFrom:afterConnectedX andY:placedY]];
+            
+            CCSprite *beforeSupportedSlot = _gameBoard[[self toTupleFrom:beforeConnectedX andY:placedY-1]];
+            CCSprite *afterSupportedSlot = _gameBoard[[ self toTupleFrom:afterConnectedX andY:placedY-1]];
+            
+            // two sided
+            if (connectN - horConnected == 2){
+                
+                if (beforeSlot.tag != oppsitePlayer && afterSlot.tag != oppsitePlayer){
+                    if (placedY == 0){ // bottom line
+                        return true;
+                    }
+                    // other than bottom line
+                    else if (beforeSupportedSlot.tag != empty && afterSupportedSlot.tag != empty)
+                        return true;
+                    
+                }
+                
+            }
+            
+            if (horConnected == connectN-1){
+                if ( placedY == 0 && ( beforeSlot.tag != oppsitePlayer || afterSlot.tag != oppsitePlayer)){
+                    return  true;
+                }
+                
+                else if ( (beforeSlot.tag != oppsitePlayer && beforeSupportedSlot.tag != empty )|| ( afterSlot.tag != oppsitePlayer && afterSupportedSlot.tag != empty) ){
+                    return true;
+                }
+            }
+            
+  
             
             
-            horConnected = (oneSlot.tag == whosTurn)? horConnected+2 :0;
-            if (horConnected == connectN) return 999;
-            
-            
-            horAvailable = (oneSlot.tag != oppsitePlayer)? horAvailable+1 :0;
         }
         
         // vertical
-        NSString* verKey = [self toTupleFrom:placedX andY:leftToRightRange+placedY];
-        if ( [_gameBoard objectForKey:verKey] != nil){
-            oneSlot = _gameBoard[verKey];
+        if ( leftToRightRange >=0 ){
+            NSString* verKey = [self toTupleFrom:placedX andY:leftToRightRange+placedY];
             
-            
-            verConnected = (oneSlot.tag == whosTurn)? verConnected+2 : 0;
-            if (verConnected == connectN) return 999;
-            
-            verAvailable = (oneSlot.tag != oppsitePlayer)? verAvailable+1 : 0;
-            
+            if ( [_gameBoard objectForKey:verKey] != nil){
+                oneSlot = _gameBoard[verKey];
+                
+                verConnected = (oneSlot.tag == whosTurn)? verConnected+1 : 0;
+                
+                if (verConnected == connectN-1){
+                    NSString* verUpKey = [self toTupleFrom:placedX andY:leftToRightRange+placedY+1];
+                    
+                    if ( ((CCSprite*)_gameBoard[verUpKey]).tag != oppsitePlayer)
+                        return true;
+                }
+                
+            }
         }
         
         // dia left top to right bot
@@ -320,10 +382,44 @@
             oneSlot = _gameBoard[fromLeftTopKey];
             
             
-            leftTopRightBotConnected = (oneSlot.tag == whosTurn)? leftTopRightBotConnected + 2 : 0;
-            if (leftTopRightBotConnected == connectN) return 999;
+            leftTopRightBotConnected = (oneSlot.tag == whosTurn)? leftTopRightBotConnected + 1 : 0;
             
-            leftTopRightBotAvailable = (oneSlot.tag != oppsitePlayer)? leftTopRightBotAvailable+1 : 0;
+            int beforeConnectedX =  leftToRightRange + placedX - leftTopRightBotConnected;
+            
+            int beforeConnectedY = (-1)*leftToRightRange+placedY + leftTopRightBotConnected;
+            
+            int afterConnectedX =  leftToRightRange + placedX + 1;
+            
+            int afterConnectedY = (-1)*leftToRightRange+placedY - 1;
+            
+            NSString *beforeKey = [self toTupleFrom:beforeConnectedX andY:beforeConnectedY];
+            NSString *afterKey = [ self toTupleFrom:afterConnectedX andY:afterConnectedY];
+            
+            NSString *beforeSupported = [self toTupleFrom:beforeConnectedX andY:beforeConnectedY-1];
+            NSString *afterSupported = [ self toTupleFrom:afterConnectedX andY:afterConnectedY-1];
+            
+            CCSprite *beforeSupportedSlot = _gameBoard[beforeSupported];
+            CCSprite *afterSupportedSlot = _gameBoard[afterSupported];
+            
+            if (connectN - leftTopRightBotConnected == 2){
+                
+                
+                if ( ((CCSprite*)_gameBoard[beforeKey]).tag == empty && ((CCSprite*)_gameBoard[afterKey]).tag == empty ){
+                    
+                    if( ((CCSprite*)_gameBoard[beforeSupported]).tag != empty && ((CCSprite*)_gameBoard[afterSupported]).tag != empty )
+                        return true;
+                }
+                
+            }
+            
+            
+            if (leftTopRightBotConnected == connectN-1){
+                // supported
+                if ((((CCSprite*)_gameBoard[afterKey]).tag != oppsitePlayer && afterSupportedSlot.tag != empty)|| (((CCSprite*)_gameBoard[beforeKey]).tag != oppsitePlayer &&   beforeSupportedSlot.tag != empty))
+                    return true;
+            }
+            
+            
             
         }
         
@@ -333,20 +429,58 @@
         if ( [_gameBoard objectForKey:fromLeftBotKey] != nil){
             oneSlot = _gameBoard[fromLeftBotKey];
             
-            leftBotRightTopConnected = (oneSlot.tag == whosTurn)? leftBotRightTopConnected + 2 : 0;
+            leftBotRightTopConnected = (oneSlot.tag == whosTurn)? leftBotRightTopConnected + 1 : 0;
             
-            if (leftBotRightTopConnected  == connectN) return 999;
+            int beforeConnectedX = leftToRightRange + placedX - leftBotRightTopConnected;
+            int afterConnectedX = leftToRightRange + placedX + 1;
             
-            leftBotRightTopAvailable = (oneSlot.tag != oppsitePlayer)? leftBotRightTopAvailable+1 : 0;
+            int beforeConnectedY =  leftToRightRange + placedY-leftBotRightTopConnected;
+            int afterConnectedY =  leftToRightRange + placedY+1;
+            
+            NSString *beforeKey = [self toTupleFrom:beforeConnectedX andY:beforeConnectedY];
+            NSString *afterKey = [ self toTupleFrom:afterConnectedX andY:afterConnectedY];
+            
+            NSString *beforeSupported = [self toTupleFrom:beforeConnectedX andY:beforeConnectedY-1];
+            NSString *afterSupported = [ self toTupleFrom:afterConnectedX andY:afterConnectedY-1];
+            
+            CCSprite *beforeSupportedSlot = _gameBoard[beforeSupported];
+            CCSprite *afterSupportedSlot = _gameBoard[afterSupported];
+
+            CCSprite *beforeSlot = _gameBoard[beforeKey];
+            CCSprite *afterSlot = _gameBoard[afterKey];
+
+            
+            if (connectN - leftBotRightTopConnected == 2){
+                
+                if ( ((CCSprite*)_gameBoard[beforeKey]).tag == empty && ((CCSprite*)_gameBoard[afterKey]).tag == empty ){
+                    
+                    if( ((CCSprite*)_gameBoard[beforeSupported]).tag != empty && ((CCSprite*)_gameBoard[afterSupported]).tag != empty )
+                        return true;
+                }
+                
+            }
+            
+            if (leftBotRightTopConnected  == connectN-1){
+                
+               if ( (beforeSlot.tag != oppsitePlayer && afterSupportedSlot.tag != empty)  || (afterSlot.tag != oppsitePlayer &&   beforeSupportedSlot.tag != empty))
+                    return true;
+
+            }
+            
             
         }
         
     }
     
-    return horConnected + horAvailable + verConnected + verAvailable + leftTopRightBotConnected + leftTopRightBotAvailable + leftBotRightTopConnected + leftBotRightTopAvailable;
+    return false;
+}
 
-    
-    return 0;
+-(void)setGameEnded{
+    self->gameEnded =true;
+}
+
+-(bool)isGameEnded{
+    return self->gameEnded;
 }
 
 @end

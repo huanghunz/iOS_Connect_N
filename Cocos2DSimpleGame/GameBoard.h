@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "cocos2d.h"
-
+#import "GameState.h"
 
 enum{
     empty = 0,
@@ -18,11 +18,14 @@ enum{
 
 @interface GameBoard : CCNode {
     NSMutableDictionary *_gameBoard;
+    GameState *_gameState;
     bool playersTurn;
     int BOARD_SIZE;
+    bool gameEnded;
+    int _connectN;
 }
 
-- (id)init:(CGSize)winSize;
+- (id)init:(CGSize)winSize andN:(int)n;
 - (GameBoard*)makeGameCopy:(GameBoard*)game;
 
 - (void) dealloc;
@@ -35,6 +38,7 @@ enum{
 - (CCSprite*) getSlotFromKey:(id)key;
 
 - (NSMutableDictionary* )getGameBoard;
+- (GameState*)getGameState;
 - (int)getBoardSize;
 - (bool)isPlayerTurn;
 
@@ -45,8 +49,10 @@ enum{
 
 - (bool) checkWin:(int)placedX and:(int)placedY with:(NSInteger)whosTurn;
 - (NSMutableArray*)getAvailableSlots;
-- (int) evaluateState:(int)placedX andY:(int)placedY of:(NSInteger) whosTurn;
+- (float) evaluateState:(int)placedX andY:(int)placedY of:(NSInteger) whosTurn;
 
-//- (void)applyMove;
+-(void)setGameEnded;
+
+-(bool)isGameEnded;
 
 @end

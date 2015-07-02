@@ -105,34 +105,35 @@
     child = [self->children objectAtIndex:lastIndex];
     return child;
 }
+-(MCSTNode*)getChildByIndex:(int)index{
+    return [self->children objectAtIndex:index];
+    
+}
 
--(void)updateSimScore:(int)eval{
+-(void)updateSimScore:(float)eval{
     
     self->numVisited++;
     self->numWins += eval;
 }
 
 -(NSString*) runMCS:(GameBoard*) gameState{
-   // NSString *chosenKey = nil;
-  
+
     MCSTNode *rootNode = self;
     MCSTNode *curNode = nil;
     
-//    t_start = time.time()
-//    t_now = time.time()
-//    t_deadline = t_now + THINK_DURATION;
     int iterations = 0;
-    
-    while( iterations < 1000){
+
+    while( iterations < 100){
         curNode = rootNode;
         
         GameBoard *gameStateCopy = [[GameBoard alloc] makeGameCopy:gameState];
-        NSMutableDictionary *gameBoard = [[gameStateCopy getGameBoard] mutableCopy];
+        NSMutableDictionary *gameBoard = [gameStateCopy getGameBoard];
         
         // Selection
+        // find the most urgent kid from a given formula
         while ([curNode->unTriedMoves count] == 0 && [curNode->children count] != 0) {
             curNode = [self UCTSelectChild];
-            CCSprite *targetSlot = gameBoard[(curNode->move)];
+            CCSprite *targetSlot = gameBoard[curNode->move];
            
             [gameStateCopy applyAction:targetSlot];
         
@@ -140,6 +141,7 @@
         }
         
         // Expand
+        // randomly pick a untried move.
         int numUnTried = [curNode->unTriedMoves count];
         if (numUnTried != 0){
             int randomIndex = arc4random_uniform(numUnTried);
@@ -156,13 +158,14 @@
         }
         
         // Simulation
+        // simulate the game to update the number of visited and score of winning
         int depth = 5;
         NSMutableArray *availableSlots = [[NSMutableArray alloc] init];
         availableSlots = [gameStateCopy getAvailableSlots];
         
-        while ( [availableSlots count] > 0 && depth > 0){
+        while ( [availableSlots count] > 0 ){
             depth--;
-            int randomIndex = arc4random_uniform(numUnTried);
+            int randomIndex = arc4random_uniform([availableSlots count]);
             NSString *randomKey = [ availableSlots objectAtIndex:randomIndex];
             CCSprite *targetSlot = gameBoard[randomKey];
             [gameStateCopy applyAction:targetSlot];
@@ -172,18 +175,14 @@
         }
         
         // Backpropagating
-//        while node != None: # backpropagate from the expanded node and work back to the root node
-//            print score, " == "
-//            result = opponentScore(score, node.playerJustMoved)# evaluate the states
-//            node.Update(result)
-//            node = node.parentNode
         while (curNode != nil){
             NSString *curKey = curNode->move;
             int x = [gameStateCopy getXFromKey:curKey];
             int y = [gameStateCopy getYFromKey:curKey];
             CCSprite *oneSlot = gameBoard[curKey];
             NSInteger slotTag = oneSlot.tag;
-            int eval = [gameStateCopy evaluateState:x andY:y of:slotTag ];
+       
+            float eval = [gameStateCopy evaluateState:x andY:y of:slotTag ];
             
             [curNode updateSimScore:eval];
             curNode = curNode->parentNode;
@@ -194,11 +193,9 @@
         
     }
     
-    //return sorted(rootnode.childNodes, key = lambda c: c.visits)[-1].move # return the move that was most visited
-   
     // choose the most visited
-    int mostVisted = -99999;
-    int childVisited = 0;
+    float mostVisted = -99999;
+    float childVisited = 0;
     MCSTNode *mostVistedChild = nil;
     for ( int i = 0;  i < [rootNode->children count]; i ++){
         MCSTNode *child = [rootNode->children objectAtIndex:i];
@@ -212,6 +209,11 @@
     }
     
     return mostVistedChild->move;
+}
+
+//
+-(void)startGame:(id)sender{
+    //code goes here
 }
 
 -(void)dealloc{

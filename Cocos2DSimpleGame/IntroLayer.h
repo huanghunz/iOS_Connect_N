@@ -11,8 +11,15 @@
 #import "cocos2d.h"
 
 // HelloWorldLayer
-@interface IntroLayer : CCLayer
+@interface IntroLayer : CCLayerColor    
 {
+    CCLabelTTF *_label;
+    CCMenuItem *_connect3;
+    CCMenuItem *_connect4;
+    CCMenuItem *_connect5;
+    CCMenuItem *_quit;
+    
+
 }
 
 // returns a CCScene that contains the HelloWorldLayer as the only child
