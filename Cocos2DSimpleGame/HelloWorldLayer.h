@@ -29,6 +29,10 @@
     int boardSize;
     int connectNGame;
     GameState *one;
+    float boardOriX;
+    NSMutableArray *_arrowCol;
+    bool animationStarted;
+    bool animationRuning;
        
 }
 

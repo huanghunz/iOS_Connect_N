@@ -23,6 +23,8 @@
 		325A808A1B44AF67000EFE66 /* GameState.m in Sources */ = {isa = PBXBuildFile; fileRef = 325A80891B44AF67000EFE66 /* GameState.m */; };
 		32A8BF0F1B3D0A4000D2DA6E /* GameBoard.m in Sources */ = {isa = PBXBuildFile; fileRef = 32A8BF0E1B3D0A4000D2DA6E /* GameBoard.m */; };
 		32ABEA2E1B4465EC0089BEBF /* arrow-down-50x50.png in Resources */ = {isa = PBXBuildFile; fileRef = 32ABEA241B4465EC0089BEBF /* arrow-down-50x50.png */; };
+		32DE78E21B450C5E00765657 /* green_50.png in Resources */ = {isa = PBXBuildFile; fileRef = 32DE78E01B450C5E00765657 /* green_50.png */; };
+		32DE78E31B450C5E00765657 /* red_50.png in Resources */ = {isa = PBXBuildFile; fileRef = 32DE78E11B450C5E00765657 /* red_50.png */; };
 		35DC30A416530C7500862E62 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35DC30A316530C7500862E62 /* QuartzCore.framework */; };
 		35DC30A616530C7500862E62 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35DC30A516530C7500862E62 /* OpenGLES.framework */; };
 		35DC30A816530C7500862E62 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35DC30A716530C7500862E62 /* OpenAL.framework */; };
@@ -186,6 +188,8 @@
 		32A8BF0D1B3D0A4000D2DA6E /* GameBoard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameBoard.h; sourceTree = "<group>"; };
 		32A8BF0E1B3D0A4000D2DA6E /* GameBoard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameBoard.m; sourceTree = "<group>"; };
 		32ABEA241B4465EC0089BEBF /* arrow-down-50x50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow-down-50x50.png"; sourceTree = "<group>"; };
+		32DE78E01B450C5E00765657 /* green_50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = green_50.png; sourceTree = "<group>"; };
+		32DE78E11B450C5E00765657 /* red_50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = red_50.png; sourceTree = "<group>"; };
 		35DC309F16530C7500862E62 /* Cocos2DSimpleGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cocos2DSimpleGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		35DC30A316530C7500862E62 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		35DC30A516530C7500862E62 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -495,6 +499,8 @@
 		323053BB1B38BDCD00F7924B /* connet-node */ = {
 			isa = PBXGroup;
 			children = (
+				32DE78E01B450C5E00765657 /* green_50.png */,
+				32DE78E11B450C5E00765657 /* red_50.png */,
 				325A80861B44ADCA000EFE66 /* quit.png */,
 				325A80761B4485F2000EFE66 /* connect3-pressed.png */,
 				325A80771B4485F2000EFE66 /* connect3.png */,
@@ -1041,6 +1047,7 @@
 				325A807F1B4485F2000EFE66 /* connect3.png in Resources */,
 				325A80821B4485F2000EFE66 /* connect5-pressed.png in Resources */,
 				325A807E1B4485F2000EFE66 /* connect3-pressed.png in Resources */,
+				32DE78E21B450C5E00765657 /* green_50.png in Resources */,
 				35DC30C616530C7800862E62 /* Icon-72.png in Resources */,
 				35DC30C816530C7800862E62 /* Icon-Small-50.png in Resources */,
 				325A80851B4485F2000EFE66 /* undo-ready.png in Resources */,
@@ -1059,6 +1066,7 @@
 				35DC32621653184500862E62 /* projectile-hd.png in Resources */,
 				35DC32631653184500862E62 /* projectile.png in Resources */,
 				323053C11B38BDDE00F7924B /* slot.png in Resources */,
+				32DE78E31B450C5E00765657 /* red_50.png in Resources */,
 				325A80841B4485F2000EFE66 /* undo-not-ready.png in Resources */,
 				323053BF1B38BDDE00F7924B /* green.png in Resources */,
 				35DC32641653184500862E62 /* background-music-aac.caf in Resources */,

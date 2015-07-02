@@ -23,8 +23,8 @@
 
 int BOARD_SIZE = 8;
 int winN = 0;
-NSString *PLAYER_MOVED_IMG = @"red.png";
-NSString *AI_MOVED_IMG = @"green.png";
+NSString *PLAYER_MOVED_IMG = @"red_50.png";
+NSString *AI_MOVED_IMG = @"green_50.png";
 
 // Helper class method that creates a Scene with the HelloWorldLayer as the only child.
 +(CCScene *) scene:(int)n
@@ -48,41 +48,37 @@ NSString *AI_MOVED_IMG = @"green.png";
 {
     if ((self = [super initWithColor:ccc4(255,255,255,255)])) {
         
-        isPlayerTurn = true;
-       
-       
         CGSize winSize = [CCDirector sharedDirector].winSize;
-        
-         float boardOriX = winSize.width/4;
-        one = [[GameState alloc] initWithBoxLocaton:CGRectMake(boardOriX+25, 25, 25, 25)andState:empty];
-             //  [self draw];
-        [self setTouchEnabled:YES];
-        
         _game = [[GameBoard alloc] init:(winSize) andN:winN];
-        NSMutableDictionary *gameBoard = [_game getGameBoard];
-        //CGRect boxSize = [ (GameState)gameBoard[@"(0,0)" g]
-        
+      
         boardSize = [ _game getBoardSize];
+        isPlayerTurn = true;
+    
+        boardOriX = winSize.width/4;
+        _arrowCol = [[NSMutableArray alloc] init];
         
-        for (int row = 0; row < boardSize; row++ ){
+        for (int row = 0; row <= boardSize; row++ ){
             for ( int col = 0; col < boardSize; col++){
+                NSString *image = (row == boardSize)? @"arrow-down-50x50.png":@"slot.png";
+               
+                CCSprite *emptySlot = [CCSprite spriteWithFile:image
+                                                         rect:CGRectMake(0, 0, 25, 25)];
+
+                emptySlot.position = ccp(boardOriX+(col+1)*25, (row+1)*25);
+                emptySlot.anchorPoint = ccp(.0f, .0f);
+                [self addChild: emptySlot z:0];
                 
-              CCSprite *emptySlot = [CCSprite spriteWithFile:@"slot.png"
-                                                          rect:CGRectMake(0, 0, 25, 25)];
-//                float boardOriX = winSize.width/4;
-               // emptySlot.position = ccp(boardOriX+(col+1)*slotWidth, (row+1)*slotHeight);
-                emptySlot = [_game getSlotFrom:col and:row ];
+                if (row == boardSize){
+                    [_arrowCol addObject:emptySlot];
+                }
                 
-             //   float boardOriX = winSize.width/4;
-              //  emptySlot.position = ccp(boardOriX+(col+1)*slotWidth, (row+1)*slotHeight);
-                [ self addChild: emptySlot];
                 
              }
         }
     }
+    [self setTouchEnabled:YES];
     return self;
 }
-
 
 
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -95,70 +91,55 @@ NSString *AI_MOVED_IMG = @"green.png";
     
     /////////////////////////////////////////////////
     
-    if (CGRectContainsPoint([one getLocation], location)){
-         [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"background-music-aac.caf"];
-    }
-    NSMutableDictionary *_gameBoard = [_game getGameBoard];
-   
+    int targetCol = -1;
+    int targetRow = -1;
+    bool found = false;
     
-    for ( id key in _gameBoard){
-       
-        CCSprite *oneSlot = _gameBoard[key];
-             
-        //TODO: need some arrow above the slots
-        if (CGRectContainsPoint(oneSlot.boundingBox, location)){
-           
-            if (oneSlot.tag == empty){ // do move
-                int targetCol = [ _game getXFromKey:key];
-                int targetRow = [  _game getYFromKey:key];
-               
-                // get the lowest empty slot
-                while ( [_game getNextSlotTag:targetCol and: targetRow] == empty){ targetRow -= 1; }
-                
-                NSString *targetCoor = [ _game toTupleFrom:targetCol andY:targetRow];
-                CCSprite *targetSlot = _gameBoard[targetCoor];
-                
-                //TODO: need to adjust the size
-                NSString *color = PLAYER_MOVED_IMG;
-                CCSprite *playerMoved = [CCSprite spriteWithFile:color
-                                                         rect:CGRectMake(0, 0, 20, 20)];
-                
-                CGFloat startY = (8+1)*[targetSlot boundingBox].size.height;
-                playerMoved.position = ccp(targetSlot.position.x, startY );
-                CGPoint movedDest = ccp(oneSlot.position.x, targetSlot.position.y);
+    NSMutableDictionary *_gameBoard = [_game getGameBoard];
+    
+    for (CCSprite *arrow in _arrowCol){
+        if (CGRectContainsPoint(arrow.boundingBox, location)){
+            targetCol = (arrow.position.x - boardOriX)/25.0 -1 ;
+            targetRow = arrow.position.y/25.0-1;
             
-                [self setTouchEnabled:NO];
-                [self addChild:playerMoved];
-
-                //TODO: need to adjust the speed of falling piece
-                [playerMoved runAction:
-                 [CCSequence actions:
-                  [CCMoveTo actionWithDuration: 1 position:movedDest],
-                  [CCCallBlockN actionWithBlock:^(CCNode *node) {
-                        [node removeFromParentAndCleanup:YES];
-                        [targetSlot setTexture:[[CCTextureCache sharedTextureCache] addImage:color]];
-                     
-                        [ _game applyAction:targetSlot];
-
-                        bool won = [ _game checkWin:targetCol and:targetRow with:targetSlot.tag];
-
-                     if (won){
-                            [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"background-music-aac.caf"];
-                         [_game setGameEnded];
-                     }
-
-                        else{
-                         // call AI movement
-                         [self AIopponmentActs];
-                        }
-                 }],
-                  nil]];
-                
+            // found exit
+            found = true;
+            break;
+        }
+    }
+    
+    if (!found){
+        for ( id key in _gameBoard){
+            GameState *oneSlot = _gameBoard[key];
+            if (CGRectContainsPoint([oneSlot getLocation], location)){
+                if ([oneSlot getState] == empty){
+                   
+                    targetCol = [ _game getXFromKey:key];
+                    targetRow = [ _game getYFromKey:key];
+                    
+                    // found, exit for loop
+                    found = true;
+                    break;
+                    
+                }
             }
         }
-        
     }
-   }
+    
+    if (found){
+         // 1. get the coordiantion of lowest empty slot
+        while ( [_game getNextSlotTag:targetCol and: targetRow] == empty){ targetRow -= 1; }
+        
+        // 2. get the lowest empty slot/state. state will be upadated after animation finishes.
+        NSString *targetCoor = [ _game toTupleFrom:targetCol andY:targetRow];
+        GameState *targetSlot = _gameBoard[targetCoor];
+        
+        
+        [self setTouchEnabled:NO];
+        [self runAnimation:targetCol andY:targetRow withState:targetSlot];
+
+    }
+}
 
 - (void) AIopponmentActs{
     
@@ -166,67 +147,85 @@ NSString *AI_MOVED_IMG = @"green.png";
     NSMutableDictionary *board = [_game getGameBoard];
     
     NSMutableArray *avaiSlots = [_game getAvailableSlots];
-    NSString *bestTry = nil;
-    float bestTryValue = -9999;
+   
     if ([avaiSlots count] == 0){
-        // end game
-        return;
+                return;
     }
-    
-    CCSprite* targetSlot = nil;
-
-    int tryX = 0;
-    int tryY = 0;
-    
+   
+    GameState* targetSlot = nil;
     // pass a copy to simulate
     MCSTNode *think = [[MCSTNode alloc] initWithGame:gameStateCopy] ;
     
     NSString *MCSTkey = [think runMCS:gameStateCopy];
     
-    
-    
     targetSlot = board[MCSTkey];
     int x = [_game getXFromKey:MCSTkey];
     int y = [_game getYFromKey:MCSTkey];
 
-    NSString *color = AI_MOVED_IMG;
-    CCSprite *AIMoved = [CCSprite spriteWithFile:color
-                                             rect:CGRectMake(0, 0, 20, 20)];
+    [self runAnimation:x andY:y withState:targetSlot];
     
-   // targetSlot = board[MCSTkey];
-    
-    CGFloat startY = (8+1)*[targetSlot boundingBox].size.height;
-    AIMoved.position = ccp(targetSlot.position.x, startY );
-    
-    CGPoint movedDest = ccp(targetSlot.position.x, targetSlot.position.y);
-    
-    [self addChild:AIMoved];
+}
 
-    [AIMoved runAction:
-     [CCSequence actions:
-      [CCMoveTo actionWithDuration: 1 position:movedDest],
-      [CCCallBlockN actionWithBlock:^(CCNode *node) {
-         [node removeFromParentAndCleanup:YES];
-         [targetSlot setTexture:[[CCTextureCache sharedTextureCache] addImage:color]];
-         
-        [ _game applyAction:targetSlot];
-
-        // bool won = [_game checkWin:tryX and:tryY with:targetSlot.tag];
-         bool won = [_game checkWin:x and:y with:targetSlot.tag];
-
-         if (won){
-             [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"background-music-aac.caf"];
-             [_game setGameEnded];
-         }
-         
-         else{
-            [self setTouchEnabled:YES];
-         }
-     }],
-      nil]];
-
+-(void)runAnimation:(int)targetCol andY:(int)targetRow withState:(GameState*)state{
+    CCSprite *newMoved = nil;
+    CGPoint movedDest;
     
+    if (!animationStarted){
+        NSString *color = ([_game isPlayerTurn] == player)?PLAYER_MOVED_IMG: AI_MOVED_IMG;
+        newMoved = [CCSprite spriteWithFile:color
+                                                    rect:CGRectMake(0, 0, 25, 25)];
+        newMoved.anchorPoint = ccp(.0f, .0f);
+        
+        CGRect targetLocation = [state getLocation]; // to calculate the destination and starting point
+        CGFloat startY = (BOARD_SIZE+1)*targetLocation.size.height;
+        CGFloat destY = (targetRow+1)*targetLocation.size.height;
+        CGFloat destX = boardOriX+(targetCol+1)*25;
+        
+        newMoved.position = ccp(destX, startY );
+        movedDest = ccp(destX, destY);
+
+        animationRuning = false;
+    }
     
+    if(!animationRuning && !animationStarted){
+        animationStarted = true;
+        animationRuning = true;
+        [self addChild:newMoved z:1];
+        
+        //TODO: need to adjust the speed of falling piece
+        [newMoved runAction:
+         [CCSequence actions:
+          [CCMoveTo actionWithDuration: 1 position:movedDest],
+          [CCCallBlockN actionWithBlock:^(CCNode *node){
+             animationRuning = false;
+             [self runAnimation:targetCol andY:targetRow withState:state];
+
+         }],
+          nil]];
+
+            }
+    if (!animationRuning){
+        animationStarted = false;
+        [ _game applyAction:state];
+        
+        bool won = [ _game checkWin:targetCol and:targetRow with:[state getState]];
+        
+        if (won){
+            [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"background-music-aac.caf"];
+            [_game setGameEnded];
+        }
+        else{
+            // call AI movement
+            //     [self AIopponmentActs];
+            if (![_game isPlayerTurn] )
+                [self AIopponmentActs];
+            else
+                [self setTouchEnabled:YES];
+        }
+        
+        
+        // animationRuning = false;
+    }
 }
 
 // on "dealloc" you need to release all your retained objects
