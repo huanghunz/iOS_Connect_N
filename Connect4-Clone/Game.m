@@ -11,7 +11,12 @@
 
 @implementation Game
 
-
+/* ========== init:(CGSize)winSize andN:(int)n =================
+Init the states of the game
+ pre:    winSize -- window size
+         n -- winning condition of connect-n
+ post:   game states initliazed, returns itself
+ */
 
 -(id)init:(CGSize)winSize andN:(int)n{
     
@@ -25,6 +30,8 @@
         for ( int col = 0; col < BOARD_SIZE; col++){
             
             float boardOriX = winSize.width/4;
+            
+            //define the location of bounding box
             CGRect newBox = CGRectMake(boardOriX+(col+1)*25, (row+1)*25, 25, 25);
             
             NSString *coor = [self toTupleFrom:col andY:row];
@@ -39,6 +46,11 @@
     return self;
 }
 
+/* ========== makeGameCopy:(Game*)game =================
+Make a game state copy
+ pre:    game -- the game state that the user wants to copy
+ post:   return a copy
+ */
 - (Game*)makeGameCopy:(Game*)game{
     
     Game *copy = [Game alloc];
@@ -67,15 +79,15 @@
 -(bool)isPlayerTurn{
     return self->_playersTurn;
 }
-/* ====================================
+/* ========= checkWin:(int)placedX and:(int)placedY with:(NSInteger)whosTurn ===================
  
  checkWin function checks if the current player wins after placing a piece,
- Pre: placedX: the x coordination of the placed piece
- placedY: the y coordination of the placed piece
- whosTurn: the tag of current player
- Post: return true if the current player connects N pieces
+ Pre:   placedX -- the x coordination of the placed piece
+        placedY -- the y coordination of the placed piece
+        whosTurn -- who just moves
+Post: return true if the current player connects N pieces
  
- ==================================== */
+*/
 - (bool) checkWin:(int)placedX and:(int)placedY with:(NSInteger)whosTurn{
     // hor ver dia
     int horConnected = 0, verConnected = 0, leftTopRightBotConnected = 0, leftBotRightTopConnected = 0;
@@ -134,40 +146,56 @@
     return false;
 }
 
-/* ====================================
+/* =========== toTupleFrom:(int)x andY: (int)y =========================
  
- toTupleFrom returns the string as key for the _gameBoard dictionary
- Pre: x: the x coordination of a slot
- y: the y coordination of a slot
+ Returns the string as key for the _gameBoard dictionary
+ Pre:   x -- the x coordination of a slot
+        y -- the y coordination of a slot
  
  Post: return a string (x,y) as key
- ==================================== */
+ */
 - (NSString*) toTupleFrom:(int)x andY: (int)y{
-    return [ NSString stringWithFormat: @"(%d,%d)", x, y];
+    
+    return [ NSString stringWithFormat: @"%d,%d", x, y];
 }
 
-/* ====================================
- g parses the string to x and y value
- Pre: key: an id or a string that is a key in _gameBoard dictionary
+/* =======getX:(int*)x andY:(int*)y fromKey:(NSString*)key ==========
+ parses the string to x and y value
+ Pre:   *x -- address of an int
+        *y -- address of an int
+        key -- an id or a string that is a key in _gameBoard dictionary
  Post: return the x,y value
- ==================================== */
+ */
 
 -(void) getX:(int*)x andY:(int*)y fromKey:(NSString*)key{
-    NSString * xChar = [key substringWithRange:NSMakeRange(1, 1)];
-    NSString * yChar = [key substringWithRange:NSMakeRange(3, 1)];
     
-    *x = [xChar intValue];
-    *y = [yChar intValue];
+    NSString *tmp = [[NSString alloc] initWithFormat:@"%@", key];
+    NSString *match = @",";
+    
+    NSString *preComma;
+    NSString *posComma;
+    
+    NSScanner *scanner = [NSScanner scannerWithString:tmp];
+    [scanner scanUpToString:match intoString:&preComma];
+    [scanner scanString:match intoString:nil];
+    posComma = [tmp substringFromIndex:scanner.scanLocation];
+       
+    
+    *x = [preComma intValue];
+    *y = [posComma intValue];
+    
+    [tmp release];
 }
 
 
+/* ========== getLowerSlotState:(int)x and: (int)y =================
+ Return the state(empty or taken) of coordination
+ pre:   x -- coordination
+        y -- coordination
+ post:  return the state of the slot lower than given y
+ */
 
-/* ====================================
- getXFromKey parses the string to x and y value
- Pre: key: an id or a string that is a key in _gameBoard dictionary
- Post: return the x value
- ==================================== */
-- (NSInteger) getNextSlotTag:(int)x and: (int)y{
+- (NSInteger) getLowerSlotState:(int)x and: (int)y{
     
     GameState *lowerSlot;
     
@@ -183,6 +211,12 @@
     }
 }
 
+/* ========== getSlotFrom:(int)x and: (int)y  =================
+ Return a GameState of give coordination
+ pre:   x -- coordination
+        y -- coordination
+ post:  return the state of (x,y)
+ */
 
 - (GameState*) getSlotFrom:(int)x and: (int)y{
     NSString *key = [self toTupleFrom:x andY:y];
@@ -190,25 +224,50 @@
     return oneSlot;
 }
 
+/* ========== getSlotFrom:(int)x and: (int)y  =================
+ Return the state of a GameState of give coordination
+ pre:   x -- coordination
+        y -- coordination
+ post:  return the state (empty or taken)
+ */
+
 -(NSInteger) getSlotStateFromX:(int)x andY:(int)y{
     NSString *key = [self toTupleFrom:x andY:y];
     GameState* oneSlot = _gameBoard[key];
     return [oneSlot getState];
 }
+
+/* ========== getSlotFromKey:(id)key  =================
+ Return the state of a GameState of give string
+ pre:    key -- a string @"(x,y)"
+ post:   return the gameState
+ */
 -(Game*) getSlotFromKey:(id)key{ return  _gameBoard[key]; }
+
+/* ========== getGameBoard  =================
+ Return the game board (a dictionary with state tags) gameBoard[@"(x,y)"] = empty
+ pre:    nothing
+ post:   return the whole game board
+ */
 -(NSMutableDictionary*)getGameBoard{ return self->_gameBoard; }
 
 
 
+/* ========== getBoardSize  =================
+ Return the game board (a dictionary with state tags) gameBoard[@"(x,y)"] = empty
+ pre:    nothing
+ post:   return the whole game board
+ */
 -(int)getBoardSize{ return self->BOARD_SIZE; }
 
--(void)dealloc{
-    [_gameBoard release];
-    _gameBoard = nil;
-    
-    [super dealloc];
-}
 
+
+/* ========== applyAction:(int)targetCol and:(int)targetRow =================
+ changes the (x,y) game state
+ pre:    targetCol -- coordination, x
+         targetRow -- coordination, y
+ post:   changes state
+ */
 -(void)applyAction:(int)targetCol and:(int)targetRow{
     
     NSString *targetCoor = [ self toTupleFrom:targetCol andY:targetRow];
@@ -218,8 +277,14 @@
     [targetSlot setState:tag];
     _playersTurn = !_playersTurn;
     
-    
 }
+
+/* ========== applyAction:(GameState*)targetSlot =================
+ changes the state of a GameState
+ pre:    targetCol -- coordination, x
+ targetRow -- coordination, y
+ post:   changes state
+ */
 -(void)applyAction:(GameState*)targetSlot{
     
     NSInteger tag = _playersTurn?player: opponment;
@@ -227,6 +292,12 @@
     _playersTurn = !_playersTurn;
 }
 
+
+/* ========== getAvailableSlots =================
+ Returns an array of lowest available slots on the board
+ pre:    nothing
+ post:   returns an array
+ */
 - (NSMutableArray* )getAvailableSlots{
     
     int boardSize = self->BOARD_SIZE;
@@ -250,6 +321,15 @@
     return  availableSlots;
 }
 
+/* ========== evaluateState:(int)placedX andY:(int)placedY of:(NSInteger) whosTurn =================
+ Return value of how good the choice is.
+ pre:    placedX --- coordination
+         playceY --- coordination
+         whosTurn -- who makes this move
+ post:   returns 1 if this piece causes a winning condition, 
+         returns -1 if this piece doesn't stop opponment from winning,
+         returns 0.5 if it is safe enough
+ */
 -(float) evaluateState:(int)placedX andY:(int)placedY of:(NSInteger) whosTurn{
     
     bool eval = [ self checkWin:placedX and:placedY with:whosTurn];
@@ -278,7 +358,13 @@
     return 0.5;
     
 }
-
+/* ========== opponmentAlmostWin:(int)placedX andY:(int)placedY of:(NSInteger)whosTurn =================
+ Checks if the player is gonna win
+ pre:    placedX --- coordination
+         playceY --- coordination
+         whosTurn -- who makes this move
+ post:   return true if the player is gonna win, else false
+ */
 - (bool)opponmentAlmostWin:(int)placedX andY:(int)placedY of:(NSInteger)whosTurn{
     
     int horConnected = 0, verConnected = 0, leftTopRightBotConnected = 0, leftBotRightTopConnected = 0;
@@ -424,10 +510,13 @@
     return false;
 }
 
-- (bool)isGameEnded{
-    return  gameEnded;
-}
 
+/* ========== isSupported:(int)col andY:(int)row =================
+ Check if (col, row-1) is filled.
+ pre:    col -- coordination, x
+         row -- coordination, y
+ post:   return true if the slot of (cor, row-1) is not empty
+ */
 - (bool)isSupported:(int)col andY:(int)row{
     
     if (row - 1 < 0)
@@ -438,7 +527,14 @@
     
     return  ([lowerSlot getState] != empty)?true:false;
     
+}
+
+
+-(void)dealloc{
+    [_gameBoard release];
+    _gameBoard = nil;
     
+    [super dealloc];
 }
 
 

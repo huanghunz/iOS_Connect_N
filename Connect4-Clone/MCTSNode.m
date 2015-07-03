@@ -11,6 +11,12 @@
 
 @implementation MCTSNode
 
+/* ========== initWithGame: (Game*)gameCopy =================
+init the root node with a copy of the game, which is used to simulate
+ pre:    gameCopy - copy of the game, includes board size and each slot state
+ post:   return itself
+ */
+
 -(id)initWithGame: (Game*)gameCopy{
     
     self->numVisited = 0;
@@ -27,6 +33,14 @@
     
     return self;
 }
+
+/* === initWithKey:(NSString*)key andParent:(MCTSNode*)parent withGameContent:(Game*)gameCopy ==========
+ init the child node with data
+ pre:    gameCopy - copy of the game, includes board size and each slot state
+         key -- which move (x,y) makes this child
+         parent -- which node(state) can reaches this child
+ post:   return a child
+ */
 
 -(id)initWithKey:(NSString*)key andParent:(MCTSNode*)parent withGameContent:(Game*)gameCopy{
     
@@ -52,6 +66,11 @@
     return self->numVisited;
 }
 
+/* =============== UCTSelectChild ==============
+Use UCT calculation to get the most urgent child
+ pre:    nothing
+ post:   return the most urgent child
+ */
 
 -(MCTSNode*) UCTSelectChild{
     
@@ -67,15 +86,17 @@
             bestValue = value;
             mostUrgent = child;
         }
-        
-        
     }
     
     return mostUrgent;
-    
 }
 
-
+/* =============== addChild:(NSString*)key withGame:(Game*)gameCopy ==============
+ adds a child to the node
+ pre:    gameCopy - copy of the game, includes board size and each slot state
+         key -- which move (x,y) makes this child
+ post:   child added
+ */
 -(void)addChild:(NSString*)key withGame:(Game*)gameCopy{
     MCTSNode *newChild = [[MCTSNode alloc] initWithKey:key andParent:self withGameContent:gameCopy];
     [self->children addObject:newChild];
@@ -83,13 +104,24 @@
     return;
 }
 
+/* =============== getNewestChild ==============
+ returns the last child
+ pre:    nothing
+ post:   return the newest added child
+ */
+
 -(MCTSNode*)getNewestChild{
    
-  // = [[MCTSNode alloc] init];
     MCTSNode * child = [self->children lastObject];
     return child;
 }
 
+/* ============= updateSimScore:(float)eval for:(NSInteger)playerJustMoved ==============
+ records the score of the player who just moved (who causes this game state)
+ pre:    eval -- the score
+         playerJustMoved -- player who caused this state
+ post:   updated scores of a node
+ */
 
 -(void)updateSimScore:(float)eval for:(NSInteger)playerJustMoved{
     
@@ -201,7 +233,10 @@
 
 
 -(void)dealloc{
-    
+    [move release];
+    move = nil;
+    [unTriedMoves release];
+    unTriedMoves = nil;
     [self->parentNode release];
     self->parentNode = nil;
     [self->unTriedMoves release];

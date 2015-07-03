@@ -33,7 +33,11 @@
 	return scene;
 }
 
-
+/* ==========  init =================
+Initializing intro layer
+pre: nothing
+post: setup the layer of buttons and labels
+*/
 -(id) init
 {
     if ((self = [super initWithColor:ccc4(00,00,00,255)])) {
@@ -73,7 +77,11 @@
     return self;
 }
 
-
+/* ==========  startButtonTapped =================
+ Responds when any of the button is pressed.
+ pre: the pressed button
+ post: go to HelloWorld layer or Quit
+ */
 - (void)starButtonTapped:(id)sender {
     
     int chosenN = 0;

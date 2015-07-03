@@ -21,6 +21,7 @@
 @interface HelloWorldLayer : CCLayerColor
 {
     Game *_game;
+    
     GameStack *_gameStack;
     int numTurns;
     

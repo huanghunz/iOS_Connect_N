@@ -12,7 +12,7 @@
     CCMenuItem *_quit;
 }
 
-+(CCScene *) sceneWithWon:(BOOL)won;
++(CCScene *) sceneWithWon:(NSInteger)won;
 - (id)initWithWon:(NSInteger)won;
 
 @end

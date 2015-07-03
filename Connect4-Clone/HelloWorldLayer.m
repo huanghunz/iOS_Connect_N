@@ -39,7 +39,11 @@ NSString *AI_MOVED_IMG = @"green_50.png";
 	return scene;
     
 }
-
+/* ========== initWithN =================
+init the HelloWorld layer
+ pre: int n --- defines connect-n game and winning condition
+ post: displays the game board
+ */
 - (id) initWithN:(int)n
 {
     if ((self = [super initWithColor:ccc4(255,255,255,255)])) {
@@ -86,16 +90,20 @@ NSString *AI_MOVED_IMG = @"green_50.png";
     return self;
 }
 
-
+/* ========== ccTouchesEnded =================
+ Responds when player touches the screen
+ If the location of touch collide with any sprite, responds accordingly
+ pre:   NSSet *touches
+        UIEvent *event
+ post: if it collides with the game board, places a piece to the lowest slot
+       if it collidse with button, quit game, or undo if the player hasn't done in 5 turns.
+ */
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     
     // Choose one of the touches to work with
     UITouch *touch = [touches anyObject];
     CGPoint location = [self convertTouchToNodeSpace:touch];
     
-    
-    
-    /////////////////////////////////////////////////
     
     int targetCol = -1;
     int targetRow = -1;
@@ -145,7 +153,7 @@ NSString *AI_MOVED_IMG = @"green_50.png";
         [[SimpleAudioEngine sharedEngine] playEffect:@"pew-pew-lei.caf"];
         
         //  get the coordiantion of lowest empty slot
-        while ( [_game getNextSlotTag:targetCol and: targetRow] == empty){ targetRow -= 1; }
+        while ( [_game getLowerSlotState:targetCol and: targetRow] == empty){ targetRow -= 1; }
         
         //  get the lowest empty slot/state. state will be upadated after animation finishes.
         NSString *targetCoor = [ _game toTupleFrom:targetCol andY:targetRow];
@@ -154,11 +162,16 @@ NSString *AI_MOVED_IMG = @"green_50.png";
         
         [self setTouchEnabled:NO];
         [self runAnimation:targetCol andY:targetRow withState:targetSlot];
-        // [self applyState:targetCol andY:targetRow withStateTag:[targetSlot getState]];
-        
+      
     }
 }
 
+/* ========== AIopponmentActs =================
+ After player moved, AI calculates to place a piece using Monte Carlo Tree Search algorithm
+ 
+ pre:   nothing
+ post:  AI places a piece
+ */
 - (void) AIopponmentActs{
     
     Game *gameStateCopy = [_game makeGameCopy:_game];
@@ -176,6 +189,13 @@ NSString *AI_MOVED_IMG = @"green_50.png";
     
 }
 
+/* ========== runAnimation: andY: withState =================
+ Based on the given location, drop a piece from top of the game board
+ pre:   targetCol -- coordination, x
+        targetRow -- coordination, y
+        state     -- who places this piece
+ post:  runs falling animation, and apply the action once the animatino is done.
+ */
 -(void)runAnimation:(int)targetCol andY:(int)targetRow withState:(GameState*)state{
     CCSprite *newMoved = nil;
     CGPoint movedDest;
@@ -220,6 +240,8 @@ NSString *AI_MOVED_IMG = @"green_50.png";
           nil]];
         
     }
+    
+    // when the animation finishes
     if (!animationRuning){
         animationStarted = false;
         
@@ -230,6 +252,14 @@ NSString *AI_MOVED_IMG = @"green_50.png";
     }
 }
 
+/* ========== applyState: andY: with: =================
+ Based on the given location and the state, changed gameState content
+ ex. if the AI places this move, gameState (x,y) belongs to AI
+ pre:   targetCol -- coordination, x
+        targetRow -- coordination, y
+        state     -- who places this piece
+ post:  changes the game states, and check if this player wins.
+ */
 -(void) applyState:(int)targetCol andY:(int)targetRow with:(GameState*)state{
     [ _game applyAction:state];
     
@@ -267,22 +297,24 @@ NSString *AI_MOVED_IMG = @"green_50.png";
     
 }
 
-// on "dealloc" you need to release all your retained objects
-- (void) dealloc
-{
-    [_game release];
-    _game = nil;
-    [_arrowCol release];
-    _arrowCol =nil;
-    
-    [super dealloc];
-}
 
+
+/* ========== gameOver: =================
+ Calls gameOver layer
+ pre:   winner -- the player, AI or no one.
+ post:  changes interface to gameOver layer
+ */
 -(void)gameOver:(NSInteger)winner{
     CCScene *endGameScene = [ GameOverLayer sceneWithWon:winner ];
     [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:2.0 scene:endGameScene ]];
 }
 
+
+/* ========== seSideSriptes: =================
+Sets the quit and undo sprites
+ pre:   winSize -- window size
+ post:  Sets the quit and undo sprites
+ */
 -(void)setSideSprites:(CGSize)winSize{
     
     _undo = [CCSprite spriteWithFile:@"undo-not-ready.png"
@@ -301,6 +333,12 @@ NSString *AI_MOVED_IMG = @"green_50.png";
     [self addChild:_quit];
 }
 
+/* ========== seSideSriptes: =================
+ *Precondition: player doesn't undo in 5 turns
+ Removes the last move of the player and AI
+ pre:   nothing
+ post:  the last two moves on game board is removed.
+ */
 
 -(void)handleUndo{
     numTurns = 0;
@@ -321,6 +359,17 @@ NSString *AI_MOVED_IMG = @"green_50.png";
     [_undo setTexture: tex];
     
     return;
+}
+
+// on "dealloc" you need to release all your retained objects
+- (void) dealloc
+{
+    [_game release];
+    _game = nil;
+    [_arrowCol release];
+    _arrowCol =nil;
+    
+    [super dealloc];
 }
 
 #pragma mark GameKit delegate

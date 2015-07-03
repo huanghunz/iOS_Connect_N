@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "cocos2d.h"
 
+// GameState -- one slot on the board
 @interface GameState : NSObject {
     CGRect location;
     NSInteger state;

@@ -14,11 +14,11 @@
 -(id) init{
     _stack = [[NSMutableArray alloc] init];
     count = 0;
-    
     return self;
 }
 
 -(int)getCount { return count;}
+
 
 -(id)pop{
     id lastItem = [_stack lastObject];

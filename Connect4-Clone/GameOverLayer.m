@@ -11,13 +11,20 @@
 
 @implementation GameOverLayer
 
-+(CCScene *) sceneWithWon:(BOOL)won {
+// Recieve an integer to select which message to display
++(CCScene *) sceneWithWon:(NSInteger)won {
     CCScene *scene = [CCScene node];
     GameOverLayer *layer = [[[GameOverLayer alloc] initWithWon:won] autorelease];
     [scene addChild: layer];
     return scene;
 }
 
+
+/* ==========  initWithWon =================
+ Initializing game over layer
+ pre: NSInteger --- information about the winner
+ post: display winning condition
+ */
 - (id)initWithWon:(NSInteger)won {
     if ((self = [super initWithColor:ccc4(255, 255, 255, 255)])) {
         NSString * message = nil;
@@ -37,7 +44,7 @@
         [self addChild:label];
         
         _quit = [ CCMenuItemImage itemWithNormalImage:@"quit.png" selectedImage:@"Quit.png" target:self selector:@selector(buttonTapped:)];
-        _quit.position = ccp(winSize.width/2,winSize.height/2+50);
+        _quit.position = ccp(winSize.width/2,winSize.height/2-50);
         
         
         // display buttons
@@ -52,6 +59,11 @@
     return self;
 }
 
+/* ========== buttonTapped =================
+ Responds when the quit button is pressed.
+ pre: the button
+ post: quit game
+ */
 - (void)buttonTapped:(id)sender {
     
     [[CCDirector sharedDirector] end];

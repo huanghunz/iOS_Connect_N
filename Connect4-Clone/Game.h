@@ -17,7 +17,7 @@ enum{ // State tags
 };
 
 @interface Game : NSObject {
-    NSMutableDictionary *_gameBoard;
+    NSMutableDictionary *_gameBoard; // each dict has a GameState Class, which has boundingBox location and state: empty, belongs to human player or belongs to AI player
     
     bool _playersTurn;
     int BOARD_SIZE;
@@ -27,8 +27,6 @@ enum{ // State tags
 
 - (id)init:(CGSize)winSize andN:(int)n;
 - (Game*)makeGameCopy:(Game*)game;
-
-
 
 - (NSString*) toTupleFrom:(int)x andY: (int)y;
 
@@ -42,7 +40,7 @@ enum{ // State tags
 - (bool)isPlayerTurn;
 
 
-- (NSInteger) getNextSlotTag:(int)x and: (int)y;
+- (NSInteger) getLowerSlotState:(int)x and: (int)y;
 
 -(void)applyAction:(int)targetCol and:(int)targetRow;
 -(void)applyAction:(GameState*)targetSlot;
@@ -51,7 +49,7 @@ enum{ // State tags
 - (NSMutableArray*)getAvailableSlots;
 - (float) evaluateState:(int)placedX andY:(int)placedY of:(NSInteger) whosTurn;
 
--(bool)isGameEnded;
+
 - (void) dealloc;
 
 @end

@@ -11,6 +11,12 @@
 
 @implementation GameState
 
+/* ==========  initWithBoxLocaton:(CGRect)loc andState:(NSInteger)tag =================
+ Init the states of one slot
+ pre:    loc --- defines bounding box location
+         tag --- state of the slot (empty, belongs to human player or AI player
+ post:   slot state initliazed, returns itself
+ */
 -(id) initWithBoxLocaton:(CGRect)loc andState:(NSInteger)tag{
     self->location = loc;
     self->state = tag;
