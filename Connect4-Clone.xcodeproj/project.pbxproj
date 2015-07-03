@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3254DF811B47174A007087A7 /* connect6-pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 3254DF7F1B47174A007087A7 /* connect6-pressed.png */; };
+		3254DF821B47174A007087A7 /* connect6.png in Resources */ = {isa = PBXBuildFile; fileRef = 3254DF801B47174A007087A7 /* connect6.png */; };
 		327B8B551B4663A300148030 /* arrow-down-50x50.png in Resources */ = {isa = PBXBuildFile; fileRef = 327B8B481B4663A300148030 /* arrow-down-50x50.png */; };
-		327B8B561B4663A300148030 /* connect3-pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 327B8B491B4663A300148030 /* connect3-pressed.png */; };
-		327B8B571B4663A300148030 /* connect3.png in Resources */ = {isa = PBXBuildFile; fileRef = 327B8B4A1B4663A300148030 /* connect3.png */; };
 		327B8B581B4663A300148030 /* connect4-pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 327B8B4B1B4663A300148030 /* connect4-pressed.png */; };
 		327B8B591B4663A300148030 /* connect4.png in Resources */ = {isa = PBXBuildFile; fileRef = 327B8B4C1B4663A300148030 /* connect4.png */; };
 		327B8B5A1B4663A300148030 /* connect5-pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 327B8B4D1B4663A300148030 /* connect5-pressed.png */; };
@@ -164,9 +164,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3254DF7F1B47174A007087A7 /* connect6-pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "connect6-pressed.png"; sourceTree = "<group>"; };
+		3254DF801B47174A007087A7 /* connect6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = connect6.png; sourceTree = "<group>"; };
 		327B8B481B4663A300148030 /* arrow-down-50x50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow-down-50x50.png"; sourceTree = "<group>"; };
-		327B8B491B4663A300148030 /* connect3-pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "connect3-pressed.png"; sourceTree = "<group>"; };
-		327B8B4A1B4663A300148030 /* connect3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = connect3.png; sourceTree = "<group>"; };
 		327B8B4B1B4663A300148030 /* connect4-pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "connect4-pressed.png"; sourceTree = "<group>"; };
 		327B8B4C1B4663A300148030 /* connect4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = connect4.png; sourceTree = "<group>"; };
 		327B8B4D1B4663A300148030 /* connect5-pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "connect5-pressed.png"; sourceTree = "<group>"; };
@@ -496,9 +496,9 @@
 		327B8B471B4663A300148030 /* Img */ = {
 			isa = PBXGroup;
 			children = (
+				3254DF7F1B47174A007087A7 /* connect6-pressed.png */,
+				3254DF801B47174A007087A7 /* connect6.png */,
 				327B8B481B4663A300148030 /* arrow-down-50x50.png */,
-				327B8B491B4663A300148030 /* connect3-pressed.png */,
-				327B8B4A1B4663A300148030 /* connect3.png */,
 				327B8B4B1B4663A300148030 /* connect4-pressed.png */,
 				327B8B4C1B4663A300148030 /* connect4.png */,
 				327B8B4D1B4663A300148030 /* connect5-pressed.png */,
@@ -1039,7 +1039,6 @@
 			files = (
 				327B8B5B1B4663A300148030 /* connect5.png in Resources */,
 				327B8B5F1B4663A300148030 /* slot.png in Resources */,
-				327B8B571B4663A300148030 /* connect3.png in Resources */,
 				32DE791C1B46363400765657 /* Icon.png in Resources */,
 				32DE7A7A1B46363700765657 /* ChangeLog in Resources */,
 				32DE790E1B46363300765657 /* Default@2x.png in Resources */,
@@ -1051,7 +1050,6 @@
 				32DE790C1B46363300765657 /* Default.png in Resources */,
 				327B8B581B4663A300148030 /* connect4-pressed.png in Resources */,
 				327B8B6B1B4682FD00148030 /* background-music-aac.caf in Resources */,
-				327B8B561B4663A300148030 /* connect3-pressed.png in Resources */,
 				32DE79161B46363400765657 /* Icon-Small-50.png in Resources */,
 				327B8B611B4663A300148030 /* undo-ready.png in Resources */,
 				32DE79211B46363400765657 /* iTunesArtwork in Resources */,
@@ -1059,8 +1057,10 @@
 				327B8B591B4663A300148030 /* connect4.png in Resources */,
 				32DE791A1B46363400765657 /* Icon-Small@2x.png in Resources */,
 				327B8B5C1B4663A300148030 /* green_50.png in Resources */,
+				3254DF811B47174A007087A7 /* connect6-pressed.png in Resources */,
 				327B8B601B4663A300148030 /* undo-not-ready.png in Resources */,
 				327B8B5E1B4663A300148030 /* red_50.png in Resources */,
+				3254DF821B47174A007087A7 /* connect6.png in Resources */,
 				32DE79121B46363400765657 /* Default-Landscape~ipad.png in Resources */,
 				32DE79101B46363300765657 /* Default-568h@2x.png in Resources */,
 				32DE791E1B46363400765657 /* Icon@2x.png in Resources */,

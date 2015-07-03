@@ -13,9 +13,10 @@
 @interface IntroLayer : CCLayerColor
 {
     CCLabelTTF *_label;
-    CCMenuItem *_connect3;
     CCMenuItem *_connect4;
     CCMenuItem *_connect5;
+    CCMenuItem *_connect6;
+
     CCMenuItem *_quit;
     
 }

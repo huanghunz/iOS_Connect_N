@@ -226,12 +226,12 @@ init the HelloWorld layer
         
         [_gameStack push:newMoved];
         [self addChild:newMoved z:1];
-        
+        float delayTime = ([_game isPlayerTurn])?0.5:0.1;
         //TODO: need to adjust the speed of falling piece
         [newMoved runAction:
          [CCSequence actions:
           [CCMoveTo actionWithDuration: 1 position:movedDest],
-          [CCDelayTime actionWithDuration:0.5],
+          [CCDelayTime actionWithDuration:delayTime],
           [CCCallBlockN actionWithBlock:^(CCNode *node){
              animationRuning = false;
              [self runAnimation:targetCol andY:targetRow withState:state];

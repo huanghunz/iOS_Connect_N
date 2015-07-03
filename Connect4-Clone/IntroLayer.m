@@ -54,21 +54,24 @@ post: setup the layer of buttons and labels
         [self addChild:_label];
         
         // creating buttons.
-        _connect3 = [ CCMenuItemImage itemWithNormalImage:@"connect3.png" selectedImage:@"connect3-pressed.png" target:self selector:@selector(starButtonTapped:)];
-        _connect3.position = ccp(winSize.width/2, 180);
         
         _connect4 = [ CCMenuItemImage itemWithNormalImage:@"connect4.png" selectedImage:@"connect4-pressed.png" target:self selector:@selector(starButtonTapped:)];
-        _connect4.position = ccp(winSize.width/2, 160);
+        _connect4.position = ccp(winSize.width/2, 180);
         
         _connect5 = [ CCMenuItemImage itemWithNormalImage:@"connect5.png" selectedImage:@"connect5-pressed.png" target:self selector:@selector(starButtonTapped:)];
-        _connect5.position = ccp(winSize.width/2, 140);
+        _connect5.position = ccp(winSize.width/2, 160);
+        
+        _connect6 = [ CCMenuItemImage itemWithNormalImage:@"connect6.png" selectedImage:@"connect6-pressed.png" target:self selector:@selector(starButtonTapped:)];
+        _connect6.position = ccp(winSize.width/2, 140);
+
         
         _quit = [ CCMenuItemImage itemWithNormalImage:@"quit.png" selectedImage:@"Quit.png" target:self selector:@selector(starButtonTapped:)];
         _quit.position = ccp(winSize.width/2, 120);
         
         
+        
         // display buttons
-        CCMenu *starMenu = [CCMenu menuWithItems: _connect3, _connect4, _connect5, _quit, nil];
+        CCMenu *starMenu = [CCMenu menuWithItems: _connect6, _connect4, _connect5, _quit, nil];
         starMenu.position = CGPointZero;
         
         [self addChild:starMenu];
@@ -87,13 +90,13 @@ post: setup the layer of buttons and labels
     int chosenN = 0;
     CCMenuItem *pressedItem = ( CCMenuItem *)sender;
     
-    if (pressedItem == _connect3) {
-        chosenN = 3;
+    if (pressedItem == _connect6) {
+        chosenN = 6;
     } else if (pressedItem == _connect4) {
         chosenN = 4;
     }
     else if (pressedItem == _connect5){
-        chosenN =5;
+        chosenN = 5;
     }
     else{
         [[CCDirector sharedDirector] end];
