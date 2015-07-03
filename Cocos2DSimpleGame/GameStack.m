@@ -23,6 +23,7 @@
 -(id)pop{
     id lastItem = [_stack lastObject];
     [ _stack removeLastObject];
+    count--;
     return lastItem;
 }
 

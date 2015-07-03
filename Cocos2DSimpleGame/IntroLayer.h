@@ -19,7 +19,6 @@
     CCMenuItem *_connect5;
     CCMenuItem *_quit;
     
-
 }
 
 // returns a CCScene that contains the HelloWorldLayer as the only child

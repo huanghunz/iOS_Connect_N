@@ -440,6 +440,15 @@
     
 }
 
+
+-(void) getX:(int*)x andY:(int*)y fromKey:(NSString*)key{
+    NSString * xChar = [key substringWithRange:NSMakeRange(1, 1)];
+    NSString * yChar = [key substringWithRange:NSMakeRange(3, 1)];
+    
+    *x = [xChar intValue];
+    *y = [yChar intValue];
+}
+
 -(void)setGameEnded{
     self->gameEnded =true;
 }

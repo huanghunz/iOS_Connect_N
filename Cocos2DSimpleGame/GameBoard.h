@@ -41,7 +41,7 @@ enum{
 
 - (int)getBoardSize;
 - (bool)isPlayerTurn;
-
+-(void) getX:(int*)x andY:(int*)y fromKey:(NSString*)key;
 
 - (NSInteger) getNextSlotTag:(int)x and: (int)y;
 -(void)applyAction:(int)targetCol and:(int)targetRow;

@@ -93,6 +93,7 @@ NSString *AI_MOVED_IMG = @"green_50.png";
     // Choose one of the touches to work with
     UITouch *touch = [touches anyObject];
     CGPoint location = [self convertTouchToNodeSpace:touch];
+
     
     
     /////////////////////////////////////////////////
@@ -129,8 +130,9 @@ NSString *AI_MOVED_IMG = @"green_50.png";
             if (CGRectContainsPoint([oneSlot getLocation], location)){
                 if ([oneSlot getState] == empty){
                    
-                    targetCol = [ _game getXFromKey:key];
-                    targetRow = [ _game getYFromKey:key];
+                    [_game getX:&targetCol andY:&targetRow fromKey:key];
+                    
+                    
                     
                     // found, exit for loop
                     found = true;
@@ -177,9 +179,8 @@ NSString *AI_MOVED_IMG = @"green_50.png";
     NSString *MCSTkey = [think runMCS:gameStateCopy];
     
     targetSlot = board[MCSTkey];
-    int x = [_game getXFromKey:MCSTkey];
-    int y = [_game getYFromKey:MCSTkey];
-
+    int x, y;
+    [_game getX:&x andY:&y fomKey:MCSTkey];
     [self runAnimation:x andY:y withState:targetSlot];
     
 }
