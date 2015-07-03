@@ -17,7 +17,6 @@
 		325A80811B4485F2000EFE66 /* connect4.png in Resources */ = {isa = PBXBuildFile; fileRef = 325A80791B4485F2000EFE66 /* connect4.png */; };
 		325A80821B4485F2000EFE66 /* connect5-pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 325A807A1B4485F2000EFE66 /* connect5-pressed.png */; };
 		325A80831B4485F2000EFE66 /* connect5.png in Resources */ = {isa = PBXBuildFile; fileRef = 325A807B1B4485F2000EFE66 /* connect5.png */; };
-		325A80841B4485F2000EFE66 /* undo-not-ready.png in Resources */ = {isa = PBXBuildFile; fileRef = 325A807C1B4485F2000EFE66 /* undo-not-ready.png */; };
 		325A80851B4485F2000EFE66 /* undo-ready.png in Resources */ = {isa = PBXBuildFile; fileRef = 325A807D1B4485F2000EFE66 /* undo-ready.png */; };
 		325A80871B44ADCA000EFE66 /* quit.png in Resources */ = {isa = PBXBuildFile; fileRef = 325A80861B44ADCA000EFE66 /* quit.png */; };
 		325A808A1B44AF67000EFE66 /* GameState.m in Sources */ = {isa = PBXBuildFile; fileRef = 325A80891B44AF67000EFE66 /* GameState.m */; };
@@ -25,6 +24,8 @@
 		32ABEA2E1B4465EC0089BEBF /* arrow-down-50x50.png in Resources */ = {isa = PBXBuildFile; fileRef = 32ABEA241B4465EC0089BEBF /* arrow-down-50x50.png */; };
 		32DE78E21B450C5E00765657 /* green_50.png in Resources */ = {isa = PBXBuildFile; fileRef = 32DE78E01B450C5E00765657 /* green_50.png */; };
 		32DE78E31B450C5E00765657 /* red_50.png in Resources */ = {isa = PBXBuildFile; fileRef = 32DE78E11B450C5E00765657 /* red_50.png */; };
+		32DE78E61B45D5BF00765657 /* GameStack.m in Sources */ = {isa = PBXBuildFile; fileRef = 32DE78E51B45D5BF00765657 /* GameStack.m */; };
+		32DE78E81B460F6E00765657 /* undo-not-ready.png in Resources */ = {isa = PBXBuildFile; fileRef = 32DE78E71B460F6E00765657 /* undo-not-ready.png */; };
 		35DC30A416530C7500862E62 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35DC30A316530C7500862E62 /* QuartzCore.framework */; };
 		35DC30A616530C7500862E62 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35DC30A516530C7500862E62 /* OpenGLES.framework */; };
 		35DC30A816530C7500862E62 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 35DC30A716530C7500862E62 /* OpenAL.framework */; };
@@ -180,7 +181,6 @@
 		325A80791B4485F2000EFE66 /* connect4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = connect4.png; sourceTree = "<group>"; };
 		325A807A1B4485F2000EFE66 /* connect5-pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "connect5-pressed.png"; sourceTree = "<group>"; };
 		325A807B1B4485F2000EFE66 /* connect5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = connect5.png; sourceTree = "<group>"; };
-		325A807C1B4485F2000EFE66 /* undo-not-ready.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "undo-not-ready.png"; sourceTree = "<group>"; };
 		325A807D1B4485F2000EFE66 /* undo-ready.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "undo-ready.png"; sourceTree = "<group>"; };
 		325A80861B44ADCA000EFE66 /* quit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = quit.png; sourceTree = "<group>"; };
 		325A80881B44AF67000EFE66 /* GameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameState.h; sourceTree = "<group>"; };
@@ -190,6 +190,9 @@
 		32ABEA241B4465EC0089BEBF /* arrow-down-50x50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow-down-50x50.png"; sourceTree = "<group>"; };
 		32DE78E01B450C5E00765657 /* green_50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = green_50.png; sourceTree = "<group>"; };
 		32DE78E11B450C5E00765657 /* red_50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = red_50.png; sourceTree = "<group>"; };
+		32DE78E41B45D5BF00765657 /* GameStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameStack.h; sourceTree = "<group>"; };
+		32DE78E51B45D5BF00765657 /* GameStack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameStack.m; sourceTree = "<group>"; };
+		32DE78E71B460F6E00765657 /* undo-not-ready.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "undo-not-ready.png"; sourceTree = "<group>"; };
 		35DC309F16530C7500862E62 /* Cocos2DSimpleGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cocos2DSimpleGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		35DC30A316530C7500862E62 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		35DC30A516530C7500862E62 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -499,6 +502,7 @@
 		323053BB1B38BDCD00F7924B /* connet-node */ = {
 			isa = PBXGroup;
 			children = (
+				32DE78E71B460F6E00765657 /* undo-not-ready.png */,
 				32DE78E01B450C5E00765657 /* green_50.png */,
 				32DE78E11B450C5E00765657 /* red_50.png */,
 				325A80861B44ADCA000EFE66 /* quit.png */,
@@ -508,7 +512,6 @@
 				325A80791B4485F2000EFE66 /* connect4.png */,
 				325A807A1B4485F2000EFE66 /* connect5-pressed.png */,
 				325A807B1B4485F2000EFE66 /* connect5.png */,
-				325A807C1B4485F2000EFE66 /* undo-not-ready.png */,
 				325A807D1B4485F2000EFE66 /* undo-ready.png */,
 				32ABEA241B4465EC0089BEBF /* arrow-down-50x50.png */,
 				323053BC1B38BDDE00F7924B /* green.png */,
@@ -557,6 +560,8 @@
 				35DC32531653184500862E62 /* ResourcePack */,
 				35DC323F16530CA300862E62 /* AppDelegate.h */,
 				35DC324016530CA300862E62 /* AppDelegate.m */,
+				32DE78E41B45D5BF00765657 /* GameStack.h */,
+				32DE78E51B45D5BF00765657 /* GameStack.m */,
 				35DC324216530CA300862E62 /* HelloWorldLayer.h */,
 				35DC324316530CA400862E62 /* HelloWorldLayer.m */,
 				325A80881B44AF67000EFE66 /* GameState.h */,
@@ -1037,6 +1042,7 @@
 				325A80831B4485F2000EFE66 /* connect5.png in Resources */,
 				35DC30B816530C7500862E62 /* Default.png in Resources */,
 				325A80871B44ADCA000EFE66 /* quit.png in Resources */,
+				32DE78E81B460F6E00765657 /* undo-not-ready.png in Resources */,
 				35DC30BA16530C7600862E62 /* Default@2x.png in Resources */,
 				35DC30BC16530C7600862E62 /* Default-568h@2x.png in Resources */,
 				35DC30BE16530C7700862E62 /* Default-Landscape~ipad.png in Resources */,
@@ -1067,7 +1073,6 @@
 				35DC32631653184500862E62 /* projectile.png in Resources */,
 				323053C11B38BDDE00F7924B /* slot.png in Resources */,
 				32DE78E31B450C5E00765657 /* red_50.png in Resources */,
-				325A80841B4485F2000EFE66 /* undo-not-ready.png in Resources */,
 				323053BF1B38BDDE00F7924B /* green.png in Resources */,
 				35DC32641653184500862E62 /* background-music-aac.caf in Resources */,
 				323053C01B38BDDE00F7924B /* red.png in Resources */,
@@ -1179,6 +1184,7 @@
 				35DC322316530CA100862E62 /* mat4stack.c in Sources */,
 				35DC322516530CA100862E62 /* matrix.c in Sources */,
 				35DC322716530CA100862E62 /* mat3.c in Sources */,
+				32DE78E61B45D5BF00765657 /* GameStack.m in Sources */,
 				325A808A1B44AF67000EFE66 /* GameState.m in Sources */,
 				35DC322916530CA100862E62 /* mat4.c in Sources */,
 				35DC322B16530CA200862E62 /* neon_matrix_impl.c in Sources */,

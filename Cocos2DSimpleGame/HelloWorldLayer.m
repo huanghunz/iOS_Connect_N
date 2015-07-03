@@ -47,14 +47,20 @@ NSString *AI_MOVED_IMG = @"green_50.png";
 - (id) init
 {
     if ((self = [super initWithColor:ccc4(255,255,255,255)])) {
+      
         
         CGSize winSize = [CCDirector sharedDirector].winSize;
         _game = [[GameBoard alloc] init:(winSize) andN:winN];
+        _gameStack = [[GameStack alloc] init];
       
         boardSize = [ _game getBoardSize];
     
         boardOriX = winSize.width/4;
         _arrowCol = [[NSMutableArray alloc] init];
+        
+        
+        [self setSideSprites :winSize];
+        numTurns = 5;
         
         for (int row = 0; row <= boardSize; row++ ){
             for ( int col = 0; col < boardSize; col++){
@@ -65,6 +71,8 @@ NSString *AI_MOVED_IMG = @"green_50.png";
 
                 emptySlot.position = ccp(boardOriX+(col+1)*25, (row+1)*25);
                 emptySlot.anchorPoint = ccp(.0f, .0f);
+                
+                
                 [self addChild: emptySlot z:0];
                 
                 if (row == boardSize){
@@ -86,7 +94,6 @@ NSString *AI_MOVED_IMG = @"green_50.png";
     UITouch *touch = [touches anyObject];
     CGPoint location = [self convertTouchToNodeSpace:touch];
     
-    [[SimpleAudioEngine sharedEngine] playEffect:@"pew-pew-lei.caf"];
     
     /////////////////////////////////////////////////
     
@@ -95,6 +102,15 @@ NSString *AI_MOVED_IMG = @"green_50.png";
     bool found = false;
     
     NSMutableDictionary *_gameBoard = [_game getGameBoard];
+    
+    if (CGRectContainsPoint(_undo.boundingBox, location) && numTurns >= 5){
+        [self handleUndo];
+        return;
+    }
+    if (CGRectContainsPoint(_quit.boundingBox , location)){
+        [[CCDirector sharedDirector] end];
+        exit(0);
+    }
     
     for (CCSprite *arrow in _arrowCol){
         if (CGRectContainsPoint(arrow.boundingBox, location)){
@@ -126,10 +142,12 @@ NSString *AI_MOVED_IMG = @"green_50.png";
     }
     
     if (found){
-         // 1. get the coordiantion of lowest empty slot
+        [[SimpleAudioEngine sharedEngine] playEffect:@"pew-pew-lei.caf"];
+
+         //  get the coordiantion of lowest empty slot
         while ( [_game getNextSlotTag:targetCol and: targetRow] == empty){ targetRow -= 1; }
         
-        // 2. get the lowest empty slot/state. state will be upadated after animation finishes.
+        //  get the lowest empty slot/state. state will be upadated after animation finishes.
         NSString *targetCoor = [ _game toTupleFrom:targetCol andY:targetRow];
         GameState *targetSlot = _gameBoard[targetCoor];
         
@@ -149,7 +167,7 @@ NSString *AI_MOVED_IMG = @"green_50.png";
     NSMutableArray *avaiSlots = [_game getAvailableSlots];
    
     if ([avaiSlots count] == 0){
-                return;
+        return;
     }
    
     GameState* targetSlot = nil;
@@ -176,6 +194,9 @@ NSString *AI_MOVED_IMG = @"green_50.png";
                                                     rect:CGRectMake(0, 0, 25, 25)];
         newMoved.anchorPoint = ccp(.0f, .0f);
         
+        newMoved.userObject = [ _game toTupleFrom:targetCol andY:targetRow];
+        //newMoved.userData =
+        
         CGRect targetLocation = [state getLocation]; // to calculate the destination and starting point
         CGFloat startY = (BOARD_SIZE+1)*targetLocation.size.height;
         CGFloat destY = (targetRow+1)*targetLocation.size.height;
@@ -190,6 +211,8 @@ NSString *AI_MOVED_IMG = @"green_50.png";
     if(!animationRuning && !animationStarted){
         animationStarted = true;
         animationRuning = true;
+        
+        [_gameStack push:newMoved];
         [self addChild:newMoved z:1];
         
         //TODO: need to adjust the speed of falling piece
@@ -220,6 +243,7 @@ NSString *AI_MOVED_IMG = @"green_50.png";
     
     bool won = [ _game checkWin:targetCol and:targetRow with:[state getState]];
     
+    
     if (won){
         [[SimpleAudioEngine sharedEngine] playBackgroundMusic:@"background-music-aac.caf"];
         [self gameOver];
@@ -228,8 +252,15 @@ NSString *AI_MOVED_IMG = @"green_50.png";
         
         if (![_game isPlayerTurn] )
             [self AIopponmentActs];
-        else
+        else{
             [self setTouchEnabled:YES];
+            numTurns++;
+            
+            if (numTurns >= 5) {
+                CCTexture2D* tex = [[CCTextureCache sharedTextureCache] addImage:@"undo-ready.png"];
+                [_undo setTexture: tex];
+            }
+        }
     }
     
 
@@ -250,6 +281,46 @@ NSString *AI_MOVED_IMG = @"green_50.png";
     bool playerWins = ([_game isPlayerTurn])?false:true;
     CCScene *endGameScene = [ GameOverLayer sceneWithWon:playerWins ];
     [[CCDirector sharedDirector] replaceScene:[CCTransitionFade transitionWithDuration:2.0 scene:endGameScene ]];
+}
+
+-(void)setSideSprites:(CGSize)winSize{
+ 
+    _undo = [CCSprite spriteWithFile:@"undo-not-ready.png"
+                                   rect:CGRectMake(0, 0, 100, 50)];
+    _undo.anchorPoint = ccp(.0f, .0f);
+    
+    _undo.position = ccp(100, winSize.height/2 - 50 );
+
+    _quit = [CCSprite spriteWithFile:@"quit.png"
+                                rect:CGRectMake(0, 0, 100, 50)];
+    _quit.anchorPoint = ccp(.0f, .0f);
+    
+    _quit.position = ccp(100, winSize.height/2 - 100 );
+    
+    [self addChild:_undo];
+    [self addChild:_quit];
+}
+
+
+-(void)handleUndo{
+    numTurns = 0;
+    
+    CCSprite *AILast = [ _gameStack pop];
+    CCSprite *playeLast  = [_gameStack pop];
+    
+    GameState *AIpiece = [_game getSlotFromKey:(NSString*)AILast.userObject];
+    GameState *playerPiece = [_game getSlotFromKey:(NSString*)playeLast.userObject];
+    
+    [AIpiece setState:empty];
+    [playerPiece setState:empty];
+    
+    [self removeChild:AILast cleanup:YES];
+    [self removeChild:playeLast cleanup:YES];
+    
+    CCTexture2D* tex = [[CCTextureCache sharedTextureCache] addImage:@"undo-not-ready.png"];
+    [_undo setTexture: tex];
+
+    return;
 }
 
 #pragma mark GameKit delegate

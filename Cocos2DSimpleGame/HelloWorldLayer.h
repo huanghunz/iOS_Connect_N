@@ -13,6 +13,7 @@
 #import "cocos2d.h"
 #import "GameBoard.h"
 #import "MCSTNode.h"
+#import "GameStack.h"
 
 // HelloWorldLayer
 //extern int const BOARD_SIZE;
@@ -23,10 +24,17 @@
 @interface HelloWorldLayer : CCLayerColor
 {
     GameBoard *_game;
-
+    CCSprite *_undo;
+    CCSprite *_quit;
+    
+    GameStack *_gameStack;
+    int numTurns;
+    
     int connectNGame;
     int boardSize;
     float boardOriX;
+    
+    NSMutableArray *_addedPieces;
     NSMutableArray *_arrowCol;
     bool animationStarted;
     bool animationRuning;
